@@ -8,7 +8,7 @@ public class PlayerController : MonoBehaviour
     Collider[] playerColliders;
 
     [SerializeField] float speed = 10f;
-    [SerializeField] float jumpForce = 6f;
+    [SerializeField] float jumpForce = 0f;
     [SerializeField] float groundCheckDistance = 0.1f;
     
     void Awake() {
@@ -28,9 +28,7 @@ public class PlayerController : MonoBehaviour
         rb.linearVelocity = new Vector3(movement.x * speed, rb.linearVelocity.y, movement.y * speed);
     }
 
-    // TODO: xử lý trái phải trước, nhảy sẽ sử dụng sau
     public void Jump(InputAction.CallbackContext context) {
-        return; // TODO: xử lý trái phải trước, nhảy sẽ sử dụng sau
         if (!context.started) return;
         if (!IsGrounded()) return;
 
@@ -39,7 +37,6 @@ public class PlayerController : MonoBehaviour
         rb.linearVelocity = velocity;
     }
     
-    // TODO: xử lý trái phải trước, nhảy sẽ sử dụng sau
     bool IsGrounded() {
         if (playerColliders == null || playerColliders.Length == 0) return false;
 
