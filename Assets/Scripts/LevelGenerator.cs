@@ -28,49 +28,63 @@ public class LevelGenerator : MonoBehaviour
 
     // tạo 1 khối mới
     void SpawnSingleChunk() {
-        float spawnPositionZ = getSpawnPositionZ();
-
+        float spawnPositionZ = GetSpawnPositionZ();
         Vector3 spawnPosition = new Vector3(transform.position.x, transform.position.y, spawnPositionZ);
         GameObject newChunk = Instantiate(chunkPrefab, spawnPosition, Quaternion.identity, chunkParent);
 
+        ApplyChunkVisual(newChunk);
+        chunks.Add(newChunk);
+    }
+
+    // tái sử dụng chunk đã qua camera: ẩn -> đẩy về cuối hàng -> hiện lại
+    void RecycleChunk(GameObject chunk) {
+        chunks.Remove(chunk);
+        chunk.SetActive(false);
+
+        float spawnPositionZ = GetSpawnPositionZ();
+        chunk.transform.position = new Vector3(transform.position.x, transform.position.y, spawnPositionZ);
+
+        ApplyChunkVisual(chunk);
+        // gọi reset/random object con tại đây
+
+        chunks.Add(chunk);
+        chunk.SetActive(true);
+    }
+
+    void ApplyChunkVisual(GameObject chunk) {
         // tô màu tạm cho khối, sau sẽ thay bằng nền hình ảnh
         Color chunkColor = chunkSpawnIndex % 2 == 0 ? Color.white : Color.black;
-        SetChunkColor(newChunk, chunkColor);
+        SetChunkColor(chunk, chunkColor);
         chunkSpawnIndex++;
-
-        chunks.Add(newChunk);
     }
 
     // tô màu cho khối
     void SetChunkColor(GameObject chunk, Color color) {
-        foreach (Renderer renderer in chunk.GetComponentsInChildren<Renderer>()) {
+        foreach (Renderer renderer in chunk.GetComponentsInChildren<Renderer>(true)) {
             renderer.material.color = color;
         }
     }
 
     // lấy vị trí z của khối mới
-    float getSpawnPositionZ() {
-        float spawnPositionZ;
+    float GetSpawnPositionZ() {
         if (chunks.Count == 0) {
-            spawnPositionZ = transform.position.z;
-        } else {
-            spawnPositionZ = chunks[chunks.Count - 1].transform.position.z + chunkLength;
+            return transform.position.z;
         }
 
-        return spawnPositionZ;
+        return chunks[chunks.Count - 1].transform.position.z + chunkLength;
     }
 
-    // di chuyển các khối
+    // di chuyển các khối và recycle khi ra khỏi camera
     void MoveChunks() {
-        for (int i = 0; i < chunks.Count; i++) {
-            GameObject chunk = chunks[i];
-            chunk.transform.Translate(-transform.forward * (moveSpeed * Time.deltaTime));
+        float recycleZ = Camera.main.transform.position.z - chunkLength;
 
-            if (chunk.transform.position.z <= Camera.main.transform.position.z - chunkLength) {
-                chunks.Remove(chunk);
-                Destroy(chunk);
-                SpawnSingleChunk();
-            }
+        for (int i = 0; i < chunks.Count; i++) {
+            chunks[i].transform.Translate(-transform.forward * (moveSpeed * Time.deltaTime));
+        }
+
+        // check chỉ tái sử dụng chunk đã qua camera
+        while (chunks.Count > 0 && chunks[0].transform.position.z <= recycleZ) {
+            RecycleChunk(chunks[0]);
         }
     }
 }
