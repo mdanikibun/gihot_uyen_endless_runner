@@ -85,3 +85,7 @@ ExportedProject/
 # MonoDevelop / MonoBleedingEdge
 mono_crash.*
 MonoBleedingEdge/
+
+# TextMesh Pro
+Assets/TextMesh Pro/
+Assets/TextMesh Pro.meta
