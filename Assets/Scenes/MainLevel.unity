@@ -546,6 +546,7 @@ MonoBehaviour:
   - {fileID: 6424953070558421770, guid: 193c7efe9cfb502439683e441b29e987, type: 3}
   spawnTime: 2
   obstacleParent: {fileID: 1388699426}
+  spawnWidth: 4
 --- !u!4 &1762800718
 Transform:
   m_ObjectHideFlags: 0
