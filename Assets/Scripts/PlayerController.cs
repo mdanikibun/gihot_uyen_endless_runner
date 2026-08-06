@@ -32,6 +32,8 @@ public class PlayerController : MonoBehaviour
         if (!context.started) return;
         if (!IsGrounded()) return;
 
+        GetComponentInChildren<Animator>()?.SetTrigger("Jump");
+
         Vector3 velocity = rb.linearVelocity;
         velocity.y = jumpForce;
         rb.linearVelocity = velocity;
