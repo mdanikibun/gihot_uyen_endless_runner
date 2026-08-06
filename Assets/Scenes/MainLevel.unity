@@ -544,7 +544,8 @@ MonoBehaviour:
   obstaclePrefabs:
   - {fileID: 4488526713892611755, guid: 6f4877afdd25f404fbd0207a190e3d5c, type: 3}
   - {fileID: 6424953070558421770, guid: 193c7efe9cfb502439683e441b29e987, type: 3}
-  spawnTime: 2
+  - {fileID: 2510532250472290117, guid: 2650a61c0af0b8c4e9f0d1d173bba580, type: 3}
+  spawnTime: 5
   obstacleParent: {fileID: 1388699426}
   spawnWidth: 4
 --- !u!4 &1762800718
@@ -556,7 +557,7 @@ Transform:
   m_GameObject: {fileID: 1762800716}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 1, z: 90}
+  m_LocalPosition: {x: 0, y: 5, z: 90}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
