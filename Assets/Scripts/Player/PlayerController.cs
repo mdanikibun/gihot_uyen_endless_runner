@@ -10,6 +10,9 @@ public class PlayerController : MonoBehaviour
     [SerializeField] float speed = 10f;
     [SerializeField] float jumpForce = 0f;
     [SerializeField] float groundCheckDistance = 0.1f;
+    [SerializeField] Animator animator;
+
+    const string animJump = "Jump";
     
     void Awake() {
         rb = GetComponent<Rigidbody>();
@@ -32,7 +35,7 @@ public class PlayerController : MonoBehaviour
         if (!context.started) return;
         if (!IsGrounded()) return;
 
-        GetComponentInChildren<Animator>()?.SetTrigger("Jump");
+        animator.SetTrigger(animJump);
 
         Vector3 velocity = rb.linearVelocity;
         velocity.y = jumpForce;
