@@ -49,7 +49,10 @@ public class LevelGenerator : MonoBehaviour
         float spawnPositionZ = GetSpawnPositionZ();
         chunk.transform.position = new Vector3(transform.position.x, transform.position.y, spawnPositionZ);
 
-        // gọi reset/random object con tại đây
+        Chunk chunkComponent = chunk.GetComponent<Chunk>();
+        if (chunkComponent != null) {
+            chunkComponent.Setup();
+        }
 
         chunks.Add(chunk);
         chunk.SetActive(true);

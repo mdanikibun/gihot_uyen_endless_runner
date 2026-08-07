@@ -12,7 +12,7 @@ public class PlayerCollisionHandler : MonoBehaviour
     LevelGenerator levelGenerator;
 
     void Start() {
-        levelGenerator = FindFirstObjectByType<LevelGenerator>();
+        levelGenerator = FindAnyObjectByType<LevelGenerator>();
     }
 
     void Update() {

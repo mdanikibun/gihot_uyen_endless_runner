@@ -11,26 +11,49 @@ public class Chunk : MonoBehaviour
     [SerializeField] float coinSpawnChance = 0.5f;
     [SerializeField] float coinSpacing = 2f;
 
-    [SerializeField] float[] lanes = {-3.5f, 0f, 3.5f};
+    [SerializeField] float[] lanes = { -3.5f, 0f, 3.5f };
 
-    List<int> availableLanes = new List<int>() {0, 1, 2};
+    List<int> availableLanes = new List<int>();
+    readonly List<GameObject> spawnedObjects = new List<GameObject>();
 
     void Start() {
+        Setup();
+    }
+
+    // Xóa fence/pickup cũ và random lại. Gọi khi spawn lần đầu hoặc recycle chunk.
+    public void Setup() {
+        ClearSpawnedContent();
+        ResetAvailableLanes();
         SpawnFences();
         SpawnPowerUpItems();
         SpawnCoins();
+    }
+
+    void ClearSpawnedContent() {
+        for (int i = 0; i < spawnedObjects.Count; i++) {
+            if (spawnedObjects[i] != null) {
+                Destroy(spawnedObjects[i]);
+            }
+        }
+        spawnedObjects.Clear();
+    }
+
+    void ResetAvailableLanes() {
+        availableLanes.Clear();
+        for (int i = 0; i < lanes.Length; i++) {
+            availableLanes.Add(i);
+        }
     }
 
     void SpawnFences() {
         int fencesToSpawn = Random.Range(0, lanes.Length);
 
         for (int i = 0; i < fencesToSpawn; i++) {
-
             if (availableLanes.Count <= 0) break;
 
             int selectedLane = SelectLane();
             Vector3 spawnPosition = new Vector3(lanes[selectedLane], transform.position.y, transform.position.z);
-            Instantiate(fencePrefab, spawnPosition, Quaternion.identity, this.transform);
+            SpawnChild(fencePrefab, spawnPosition);
         }
     }
 
@@ -39,7 +62,7 @@ public class Chunk : MonoBehaviour
 
         int selectedLane = SelectLane();
         Vector3 spawnPosition = new Vector3(lanes[selectedLane], transform.position.y, transform.position.z);
-        Instantiate(powerUpItemPrefab, spawnPosition, Quaternion.identity, this.transform);
+        SpawnChild(powerUpItemPrefab, spawnPosition);
     }
 
     void SpawnCoins() {
@@ -54,15 +77,21 @@ public class Chunk : MonoBehaviour
         for (int i = 0; i < coinToSpawn; i++) {
             float spawnZPosition = topOfChunkZPosition - coinSpacing * i;
             Vector3 spawnPosition = new Vector3(lanes[selectedLane], transform.position.y, spawnZPosition);
-            Instantiate(coinPrefab, spawnPosition, Quaternion.identity, this.transform);
+            SpawnChild(coinPrefab, spawnPosition);
         }
+    }
+
+    void SpawnChild(GameObject prefab, Vector3 worldPosition) {
+        if (prefab == null) return;
+
+        GameObject instance = Instantiate(prefab, worldPosition, Quaternion.identity, transform);
+        spawnedObjects.Add(instance);
     }
 
     int SelectLane() {
         int randomLaneIndex = Random.Range(0, availableLanes.Count);
         int selectedLane = availableLanes[randomLaneIndex];
         availableLanes.RemoveAt(randomLaneIndex);
-
         return selectedLane;
     }
 }

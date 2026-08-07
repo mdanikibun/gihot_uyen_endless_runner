@@ -6,7 +6,7 @@ public class PowerUpItem : Pickup
     [SerializeField] float speedChangeAmount = 2f;
 
     void Start() {
-        levelGenerator = FindFirstObjectByType<LevelGenerator>();
+        levelGenerator = FindAnyObjectByType<LevelGenerator>();
     }
 
     protected override void OnPickup() {
