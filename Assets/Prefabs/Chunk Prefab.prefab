@@ -79,6 +79,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Chunk
   fencePrefab: {fileID: 7423209185847986581, guid: ecd0a55845dbb7e4d9e8df3be73433f7, type: 3}
+  powerUpItemPrefab: {fileID: 8325414306840121778, guid: b8093f641bc914449bee79b9dbb40578, type: 3}
+  coinPrefab: {fileID: 5024713153122945422, guid: 0f919459af44cf04da8aa15a50b54b15, type: 3}
+  powerUpItemSpawnChance: 0.1
+  coinSpawnChance: 1
+  coinSeperationLength: 2
   lanes:
   - -3.5
   - 0
