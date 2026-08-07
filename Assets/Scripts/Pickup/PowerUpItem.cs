@@ -1,16 +1,15 @@
 using UnityEngine;
 
-public class PowerUpItem : MonoBehaviour
+public class PowerUpItem : Pickup
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-        
+    LevelGenerator levelGenerator;
+    [SerializeField] float speedChangeAmount = 2f;
+
+    void Start() {
+        levelGenerator = FindFirstObjectByType<LevelGenerator>();
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
+    protected override void OnPickup() {
+        levelGenerator.ChangeChunkMoveSpeed(speedChangeAmount);
     }
 }

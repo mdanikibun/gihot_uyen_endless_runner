@@ -9,8 +9,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8998977460706176816}
-  - component: {fileID: -5823120008821648058}
   - component: {fileID: 6711900572537440556}
+  - component: {fileID: 615421169092326567}
   m_Layer: 0
   m_Name: Coin Pickup
   m_TagString: Untagged
@@ -34,18 +34,6 @@ Transform:
   - {fileID: 1027435058344266410}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &-5823120008821648058
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5024713153122945422}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b4bf25abc9157a44499f018f86f076a3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Pickup
 --- !u!136 &6711900572537440556
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -69,6 +57,19 @@ CapsuleCollider:
   m_Height: 0.55187786
   m_Direction: 1
   m_Center: {x: 0.26175636, y: 0.5640444, z: 0.10786036}
+--- !u!114 &615421169092326567
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5024713153122945422}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1bf45e19a23b996438d1cf7d1f086ff4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Coin
+  rotationSpeed: 100
 --- !u!1 &8712357087354079286
 GameObject:
   m_ObjectHideFlags: 0

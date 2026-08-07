@@ -8,6 +8,7 @@ public class LevelGenerator : MonoBehaviour
     [SerializeField] Transform chunkParent;
     [SerializeField] float chunkLength = 10f;
     [SerializeField] float moveSpeed = 10f;
+    [SerializeField] float minMoveSpeed = 2f;
     List<GameObject> chunks = new List<GameObject>();
 
     void Start() {
@@ -18,14 +19,21 @@ public class LevelGenerator : MonoBehaviour
         MoveChunks();
     }
 
-    // tạo các khối đầu tiên
+    public void ChangeChunkMoveSpeed(float speedAmount) {
+        moveSpeed += speedAmount;
+        if (moveSpeed < minMoveSpeed) {
+            moveSpeed = minMoveSpeed;
+        }
+
+        Physics.gravity = new Vector3(Physics.gravity.x, Physics.gravity.y, Physics.gravity.z - speedAmount);
+    }
+
     void SpawnStartingChunks() {
         for (int i = 0; i < chunkCount; i++) {
             SpawnSingleChunk();
         }
     }
 
-    // tạo 1 khối mới
     void SpawnSingleChunk() {
         float spawnPositionZ = GetSpawnPositionZ();
         Vector3 spawnPosition = new Vector3(transform.position.x, transform.position.y, spawnPositionZ);
@@ -34,7 +42,6 @@ public class LevelGenerator : MonoBehaviour
         chunks.Add(newChunk);
     }
 
-    // tái sử dụng chunk đã qua camera: ẩn -> đẩy về cuối hàng -> hiện lại
     void RecycleChunk(GameObject chunk) {
         chunks.Remove(chunk);
         chunk.SetActive(false);
@@ -48,7 +55,6 @@ public class LevelGenerator : MonoBehaviour
         chunk.SetActive(true);
     }
 
-    // lấy vị trí z của khối mới
     float GetSpawnPositionZ() {
         if (chunks.Count == 0) {
             return transform.position.z;
@@ -57,7 +63,6 @@ public class LevelGenerator : MonoBehaviour
         return chunks[chunks.Count - 1].transform.position.z + chunkLength;
     }
 
-    // di chuyển các khối và recycle khi ra khỏi camera
     void MoveChunks() {
         float recycleZ = Camera.main.transform.position.z - chunkLength;
 

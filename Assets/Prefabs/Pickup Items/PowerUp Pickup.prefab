@@ -9,8 +9,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 832769631345240043}
-  - component: {fileID: -1636960170265417520}
   - component: {fileID: 7284028525003187981}
+  - component: {fileID: 429917362810956816}
   m_Layer: 0
   m_Name: PowerUp Pickup
   m_TagString: Untagged
@@ -34,18 +34,6 @@ Transform:
   - {fileID: 9024009435468216118}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &-1636960170265417520
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8325414306840121778}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b4bf25abc9157a44499f018f86f076a3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Pickup
 --- !u!65 &7284028525003187981
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -67,6 +55,19 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.86631614, y: 0.7760644, z: 0.7967403}
   m_Center: {x: 0.26618347, y: 0.7561703, z: 0.16466188}
+--- !u!114 &429917362810956816
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8325414306840121778}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b5fa3a47942f3fb41a55d64a71a38be9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PowerUpItem
+  rotationSpeed: 100
 --- !u!1 &8477373815732999445
 GameObject:
   m_ObjectHideFlags: 0

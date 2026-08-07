@@ -5,8 +5,15 @@ public class PlayerCollisionHandler : MonoBehaviour
     [SerializeField] Animator animator;
     [SerializeField] GameObject[] obstaclePrefabs;
     [SerializeField] float collisionCooldown = 1f;
+    [SerializeField] float speedChangeAmount = -1f;
     float cooldownTimer = 0f;
     const string animHit = "Hit";
+
+    LevelGenerator levelGenerator;
+
+    void Start() {
+        levelGenerator = FindFirstObjectByType<LevelGenerator>();
+    }
 
     void Update() {
         cooldownTimer += Time.deltaTime;
@@ -19,6 +26,7 @@ public class PlayerCollisionHandler : MonoBehaviour
             if (other.gameObject.name.Contains(obstaclePrefab.name)) {
                 animator.SetTrigger(animHit);
                 cooldownTimer = 0f;
+                levelGenerator.ChangeChunkMoveSpeed(speedChangeAmount);
             }
         }
     }
