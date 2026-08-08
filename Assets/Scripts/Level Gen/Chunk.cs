@@ -3,10 +3,12 @@ using System.Collections.Generic;
 
 public class Chunk : MonoBehaviour
 {
+    [Header("References")]
     [SerializeField] GameObject fencePrefab;
     [SerializeField] GameObject powerUpItemPrefab;
     [SerializeField] GameObject coinPrefab;
 
+    [Header("Settings")]
     [SerializeField] float powerUpItemSpawnChance = 0.3f;
     [SerializeField] float coinSpawnChance = 0.5f;
     [SerializeField] float coinSpacing = 2f;

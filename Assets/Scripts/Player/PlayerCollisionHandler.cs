@@ -2,10 +2,14 @@ using UnityEngine;
 
 public class PlayerCollisionHandler : MonoBehaviour
 {
+    [Header("References")]
     [SerializeField] Animator animator;
     [SerializeField] GameObject[] obstaclePrefabs;
+
+    [Header("Settings")]
     [SerializeField] float collisionCooldown = 1f;
     [SerializeField] float speedChangeAmount = -1f;
+
     float cooldownTimer = 0f;
     const string animHit = "Hit";
     const string animJump = "Jump";

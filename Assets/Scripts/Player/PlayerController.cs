@@ -6,11 +6,14 @@ public class PlayerController : MonoBehaviour
     Vector2 movement;
     Rigidbody rb;
     Collider[] playerColliders;
+    
+    [Header("References")]
+    [SerializeField] Animator animator;
 
+    [Header("Settings")]
     [SerializeField] float speed = 10f;
     [SerializeField] float jumpForce = 0f;
     [SerializeField] float groundCheckDistance = 0.1f;
-    [SerializeField] Animator animator;
 
     const string animJump = "Jump";
     const string animStumbleState = "Stumble";

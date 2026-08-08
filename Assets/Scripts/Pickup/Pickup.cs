@@ -2,7 +2,9 @@ using UnityEngine;
 
 public abstract class Pickup : MonoBehaviour
 {
+    [Header("Settings")]
     [SerializeField] float rotationSpeed = 100f;
+
     const string playerTag = "Player";
     Transform visualRoot;
     Vector3 localRotationCenter;

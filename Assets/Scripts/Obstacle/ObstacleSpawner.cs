@@ -4,9 +4,12 @@ using System.Collections;
 
 public class ObstacleSpawner : MonoBehaviour
 {
+    [Header("References")]
     [SerializeField] GameObject[] obstaclePrefabs;
-    [SerializeField] float spawnTime = 3f;
     [SerializeField] Transform obstacleParent;
+
+    [Header("Settings")]
+    [SerializeField] float spawnTime = 3f;
     [SerializeField] float spawnWidth = 4f;
 
     void Start() {
