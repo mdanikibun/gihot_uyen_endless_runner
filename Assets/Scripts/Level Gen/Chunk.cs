@@ -11,7 +11,7 @@ public class Chunk : MonoBehaviour
     [SerializeField] float coinSpawnChance = 0.5f;
     [SerializeField] float coinSpacing = 2f;
 
-    [SerializeField] float[] lanes = { -3.5f, 0f, 3.5f };
+    [SerializeField] float[] lanes = { -3f, 0f, 3f };
 
     List<int> availableLanes = new List<int>();
     readonly List<GameObject> spawnedObjects = new List<GameObject>();
@@ -61,7 +61,7 @@ public class Chunk : MonoBehaviour
         if (Random.value > powerUpItemSpawnChance || availableLanes.Count <= 0) return;
 
         int selectedLane = SelectLane();
-        Vector3 spawnPosition = new Vector3(lanes[selectedLane], transform.position.y, transform.position.z);
+        Vector3 spawnPosition = new Vector3(lanes[selectedLane] - .25f, transform.position.y, transform.position.z);
         SpawnChild(powerUpItemPrefab, spawnPosition);
     }
 
@@ -76,7 +76,7 @@ public class Chunk : MonoBehaviour
 
         for (int i = 0; i < coinToSpawn; i++) {
             float spawnZPosition = topOfChunkZPosition - coinSpacing * i;
-            Vector3 spawnPosition = new Vector3(lanes[selectedLane], transform.position.y, spawnZPosition);
+            Vector3 spawnPosition = new Vector3(lanes[selectedLane] - .25f, transform.position.y, spawnZPosition);
             SpawnChild(coinPrefab, spawnPosition);
         }
     }
@@ -92,6 +92,7 @@ public class Chunk : MonoBehaviour
         int randomLaneIndex = Random.Range(0, availableLanes.Count);
         int selectedLane = availableLanes[randomLaneIndex];
         availableLanes.RemoveAt(randomLaneIndex);
+
         return selectedLane;
     }
 }

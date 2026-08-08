@@ -13,6 +13,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] Animator animator;
 
     const string animJump = "Jump";
+    const string animStumbleState = "Stumble";
     
     void Awake() {
         rb = GetComponent<Rigidbody>();
@@ -34,6 +35,7 @@ public class PlayerController : MonoBehaviour
     public void Jump(InputAction.CallbackContext context) {
         if (!context.started) return;
         if (!IsGrounded()) return;
+        if (IsHitPlaying()) return;
 
         animator.SetTrigger(animJump);
 
@@ -42,6 +44,17 @@ public class PlayerController : MonoBehaviour
         rb.linearVelocity = velocity;
     }
     
+    bool IsHitPlaying() {
+        AnimatorStateInfo current = animator.GetCurrentAnimatorStateInfo(0);
+        if (current.IsName(animStumbleState)) return true;
+
+        if (animator.IsInTransition(0) && animator.GetNextAnimatorStateInfo(0).IsName(animStumbleState)) {
+            return true;
+        }
+
+        return false;
+    }
+
     bool IsGrounded() {
         if (playerColliders == null || playerColliders.Length == 0) return false;
 
