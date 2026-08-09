@@ -2,7 +2,17 @@ using UnityEngine;
 
 public class Coin : Pickup
 {
+
+    [Header("Settings")]
+    [SerializeField] int scoreAmount = 10;
+
+    ScoreManager scoreManager;
+
+    void Start() {
+        scoreManager = FindAnyObjectByType<ScoreManager>();
+    }
+
     protected override void OnPickup() {
-        Debug.Log("Coin picked up, adding 100 points");
+        scoreManager.AddScore(scoreAmount);
     }
 }

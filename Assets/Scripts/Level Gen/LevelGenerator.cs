@@ -5,11 +5,13 @@ public class LevelGenerator : MonoBehaviour
 {
     [Header("References")]
     [SerializeField] CameraController cameraController;
-    [SerializeField] GameObject chunkPrefab;
+    [SerializeField] GameObject chunkGatePrefab;
+    [SerializeField] GameObject[] chunkPrefabs;
     [SerializeField] Transform chunkParent;
 
     [Header("Settings")]
     [SerializeField] int chunkCount = 12;
+    [SerializeField] int chunkGateInterval = 8;
     [SerializeField] float chunkLength = 10f;
     [SerializeField] float moveSpeed = 8f;
     [SerializeField] float minMoveSpeed = 2f;
@@ -18,6 +20,7 @@ public class LevelGenerator : MonoBehaviour
     [SerializeField] float maxGravityZ = -2f;
 
     List<GameObject> chunks = new List<GameObject>();
+    int chunkSpawnedCount = 0;
 
     void Start() {
         SpawnStartingChunks();
@@ -51,9 +54,15 @@ public class LevelGenerator : MonoBehaviour
     void SpawnSingleChunk() {
         float spawnPositionZ = GetSpawnPositionZ();
         Vector3 spawnPosition = new Vector3(transform.position.x, transform.position.y, spawnPositionZ);
-        GameObject newChunk = Instantiate(chunkPrefab, spawnPosition, Quaternion.identity, chunkParent);
 
+        GameObject newChunk;
+        if (chunkSpawnedCount % chunkGateInterval == 0 && chunkSpawnedCount > 0) {
+            newChunk = Instantiate(chunkGatePrefab, spawnPosition, Quaternion.identity, chunkParent);
+        } else {
+            newChunk = Instantiate(chunkPrefabs[Random.Range(0, chunkPrefabs.Length)], spawnPosition, Quaternion.identity, chunkParent);
+        }
         chunks.Add(newChunk);
+        chunkSpawnedCount++;
     }
 
     void RecycleChunk(GameObject chunk) {

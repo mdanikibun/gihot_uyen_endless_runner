@@ -15,9 +15,11 @@ public class PlayerCollisionHandler : MonoBehaviour
     const string animJump = "Jump";
 
     LevelGenerator levelGenerator;
+    GameManager gameManager;
 
     void Start() {
         levelGenerator = FindAnyObjectByType<LevelGenerator>();
+        gameManager = FindAnyObjectByType<GameManager>();
     }
 
     void Update() {
@@ -33,6 +35,7 @@ public class PlayerCollisionHandler : MonoBehaviour
                 animator.SetTrigger(animHit);
                 cooldownTimer = 0f;
                 levelGenerator.ChangeChunkMoveSpeed(speedChangeAmount);
+                gameManager.TakeDamage();
             }
         }
     }

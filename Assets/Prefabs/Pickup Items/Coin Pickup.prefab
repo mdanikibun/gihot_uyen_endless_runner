@@ -70,6 +70,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Coin
   rotationSpeed: 100
+  scoreAmount: 10
 --- !u!1 &8712357087354079286
 GameObject:
   m_ObjectHideFlags: 0
