@@ -6,6 +6,7 @@ public class LevelGenerator : MonoBehaviour
 {
     [Header("References")]
     [SerializeField] CameraController cameraController;
+    [SerializeField] GameObject[] chunkStartingPrefabs;
     [SerializeField] GameObject chunkGatePrefab;
     [SerializeField] GameObject[] chunkPrefabs;
     [SerializeField] Transform chunkParent;
@@ -26,6 +27,7 @@ public class LevelGenerator : MonoBehaviour
     Coroutine speedBuffCoroutine;
 
     List<GameObject> chunks = new List<GameObject>();
+    readonly HashSet<GameObject> startingChunks = new HashSet<GameObject>();
 
     readonly float gravityZDefault = -9.81f;
     int chunkSpawnedCount = 0;
@@ -33,6 +35,7 @@ public class LevelGenerator : MonoBehaviour
     float activeSpeedAmount;
     float totalDistance = 0f;
     float speedUpCountdown = 0f;
+    bool canCountDistance;
 
     void Start() {
         moveSpeed = speedDefault;
@@ -43,11 +46,14 @@ public class LevelGenerator : MonoBehaviour
 
     void Update() {
         MoveChunks();
-        
+
         UpdateSpeedUpCountdown();
 
-        totalDistance += moveSpeed / 2.5f * Time.deltaTime;
-        gameManager.UpdateDistanceText(totalDistance);
+        if (canCountDistance) {
+            totalDistance += moveSpeed / 2.5f * Time.deltaTime;
+            gameManager.UpdateDistanceText(totalDistance);
+        }
+
         gameManager.UpdateSpeedUpCountdownText(speedUpCountdown);
     }
 
@@ -117,8 +123,11 @@ public class LevelGenerator : MonoBehaviour
 
         moveSpeed = newMoveSpeed;
 
-        float newGravityZ = Mathf.Clamp(gravityZDefault - speedAmount, minGravityZ, maxGravityZ);
-        Physics.gravity = new Vector3(Physics.gravity.x, Physics.gravity.y, newGravityZ);
+        if (speedAmount > speedDefault) {
+            float newGravityZ = Mathf.Clamp(gravityZDefault - speedAmount, minGravityZ, maxGravityZ);
+            Physics.gravity = new Vector3(Physics.gravity.x, Physics.gravity.y, newGravityZ);
+        }
+
         activeSpeedAmount = speedAmount;
 
         if (cameraController != null) {
@@ -143,7 +152,27 @@ public class LevelGenerator : MonoBehaviour
     }
 
     void SpawnStartingChunks() {
-        for (int i = 0; i < chunkCount; i++) {
+        if (chunkStartingPrefabs != null) {
+            for (int i = 0; i < chunkStartingPrefabs.Length; i++) {
+                if (chunkStartingPrefabs[i] == null) continue;
+
+                float spawnPositionZ = GetSpawnPositionZ();
+                Vector3 spawnPosition = new Vector3(transform.position.x, transform.position.y, spawnPositionZ);
+                GameObject introChunk = Instantiate(chunkStartingPrefabs[i], spawnPosition, Quaternion.identity, chunkParent);
+
+                Chunk introChunkComponent = introChunk.GetComponent<Chunk>();
+                if (introChunkComponent != null) {
+                    introChunkComponent.DisableItemSpawn();
+                }
+
+                chunks.Add(introChunk);
+                startingChunks.Add(introChunk);
+            }
+        }
+
+        canCountDistance = startingChunks.Count == 0;
+
+        while (chunks.Count < chunkCount) {
             SpawnSingleChunk();
         }
     }
@@ -178,6 +207,18 @@ public class LevelGenerator : MonoBehaviour
         chunk.SetActive(true);
     }
 
+    void RemoveStartingChunk(GameObject chunk) {
+        chunks.Remove(chunk);
+        startingChunks.Remove(chunk);
+        Destroy(chunk);
+
+        SpawnSingleChunk();
+
+        if (startingChunks.Count == 0) {
+            canCountDistance = true;
+        }
+    }
+
     float GetSpawnPositionZ() {
         if (chunks.Count == 0) {
             return transform.position.z;
@@ -193,9 +234,13 @@ public class LevelGenerator : MonoBehaviour
             chunks[i].transform.Translate(-transform.forward * (moveSpeed * Time.deltaTime));
         }
 
-        // check chỉ tái sử dụng chunk đã qua camera
         while (chunks.Count > 0 && chunks[0].transform.position.z <= recycleZ) {
-            RecycleChunk(chunks[0]);
+            GameObject frontChunk = chunks[0];
+            if (startingChunks.Contains(frontChunk)) {
+                RemoveStartingChunk(frontChunk);
+            } else {
+                RecycleChunk(frontChunk);
+            }
         }
     }
 }

@@ -17,9 +17,16 @@ public class Chunk : MonoBehaviour
 
     List<int> availableLanes = new List<int>();
     readonly List<GameObject> spawnedObjects = new List<GameObject>();
+    bool shouldSpawnItems = true;
 
     void Start() {
-        Setup();
+        if (shouldSpawnItems) {
+            Setup();
+        }
+    }
+
+    public void DisableItemSpawn() {
+        shouldSpawnItems = false;
     }
 
     // Xóa fence/pickup cũ và random lại. Gọi khi spawn lần đầu hoặc recycle chunk.
