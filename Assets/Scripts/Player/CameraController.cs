@@ -19,12 +19,12 @@ public class CameraController : MonoBehaviour
         cinemachineCamera = GetComponent<CinemachineCamera>();
     }
 
-    public void ChangeCameraFOV(float speedAmount)
+    public void ChangeCameraFOV(float speedAmount, float currentSpeed, float speedDefault)
     {
         StopAllCoroutines();
         StartCoroutine(ChangeFOVRoutine(speedAmount));
 
-        if (speedAmount > 0) {
+        if (currentSpeed > speedDefault) {
             speedUpParticle.Play();
         } else {
             speedUpParticle.Stop();
