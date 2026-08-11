@@ -85,11 +85,7 @@ public class LevelGenerator : MonoBehaviour
         canCountDistance = false;
         totalDistance = 0f;
 
-        if (speedBuffCoroutine != null) {
-            StopCoroutine(speedBuffCoroutine);
-            speedBuffCoroutine = null;
-        }
-        EndSpeedBuff();
+        ClearAllSpeedEffects();
         ClearAllChunks();
         SpawnDemoChunks();
     }
@@ -100,11 +96,7 @@ public class LevelGenerator : MonoBehaviour
         canCountDistance = false;
         totalDistance = 0f;
 
-        if (speedBuffCoroutine != null) {
-            StopCoroutine(speedBuffCoroutine);
-            speedBuffCoroutine = null;
-        }
-        EndSpeedBuff();
+        ClearAllSpeedEffects();
         ClearAllChunks();
         SpawnStartingChunks();
     }
@@ -194,14 +186,20 @@ public class LevelGenerator : MonoBehaviour
     }
 
     void EndSpeedBuff() {
-        ResetSpeedToDefault();
+        ClearAllSpeedEffects();
+    }
 
-        if (cameraController != null && activeSpeedAmount != 0f) {
-            cameraController.ChangeCameraFOV(-activeSpeedAmount, moveSpeed, speedDefault);
+    void ClearAllSpeedEffects() {
+        if (speedBuffCoroutine != null) {
+            StopCoroutine(speedBuffCoroutine);
+            speedBuffCoroutine = null;
         }
 
         activeSpeedAmount = 0f;
         speedUpCountdown = 0f;
+        ResetSpeedToDefault();
+
+        cameraController.ResetToDefault();
     }
 
     void ResetSpeedToDefault() {

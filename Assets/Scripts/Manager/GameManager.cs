@@ -12,6 +12,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] GameObject gameOverText;
     [SerializeField] GameObject gameOverButtonsRoot;
     [SerializeField] Button restartButton;
+    [SerializeField] Button leaderboardButton;
     [SerializeField] Button mainMenuButton;
     [SerializeField] Animator playerAnimator;
     [SerializeField] PlayerController playerController;
@@ -91,6 +92,8 @@ public class GameManager : MonoBehaviour
         if (isGameOver) return;
         isGameOver = true;
 
+        scoreManager.AddLeaderboardEntry(gameFlow.PlayerName, distanceValue, scoreManager.Score);
+
         playerController.enabled = false;
         StartCoroutine(HandleBeforeGameOver());
     }
@@ -116,6 +119,7 @@ public class GameManager : MonoBehaviour
     void EnsureGameOverButtons() {
         SetGameOverButtonsVisible(false);
         restartButton.onClick.AddListener(OnRestartClicked);
+        leaderboardButton.onClick.AddListener(OnLeaderboardClicked);
         mainMenuButton.onClick.AddListener(OnMainMenuClicked);
     }
 
@@ -125,6 +129,10 @@ public class GameManager : MonoBehaviour
 
     void OnRestartClicked() {
         gameFlow.RestartRun();
+    }
+
+    void OnLeaderboardClicked() {
+        gameFlow.ShowLeaderboard();
     }
 
     void OnMainMenuClicked() {

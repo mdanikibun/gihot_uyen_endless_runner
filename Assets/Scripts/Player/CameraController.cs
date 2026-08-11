@@ -14,9 +14,11 @@ public class CameraController : MonoBehaviour
     [SerializeField] float zoomSpeed = 5f;
     
     CinemachineCamera cinemachineCamera;
+    float defaultFOV;
 
     void Awake() {
         cinemachineCamera = GetComponent<CinemachineCamera>();
+        defaultFOV = cinemachineCamera.Lens.FieldOfView;
     }
 
     public void ChangeCameraFOV(float speedAmount, float currentSpeed, float speedDefault)
@@ -27,8 +29,14 @@ public class CameraController : MonoBehaviour
         if (currentSpeed > speedDefault) {
             speedUpParticle.Play();
         } else {
-            speedUpParticle.Stop();
+            speedUpParticle.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
         }
+    }
+
+    public void ResetToDefault() {
+        StopAllCoroutines();
+        cinemachineCamera.Lens.FieldOfView = defaultFOV;
+        speedUpParticle.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
     }
 
     IEnumerator ChangeFOVRoutine(float speedAmount) {

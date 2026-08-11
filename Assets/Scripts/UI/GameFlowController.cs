@@ -26,6 +26,7 @@ public class GameFlowController : MonoBehaviour
     int selectedCharacterIndex = -1;
     CharacterOption selectedCharacter;
     bool leaderboardOpenedFromPause;
+    bool leaderboardOpenedWhileMenusHidden;
 
     public GameFlowState CurrentState => currentState;
     public string PlayerName => playerName;
@@ -108,6 +109,15 @@ public class GameFlowController : MonoBehaviour
 
     public void ShowLeaderboard() {
         leaderboardOpenedFromPause = currentState == GameFlowState.Paused;
+        leaderboardOpenedWhileMenusHidden = !canvasMenus.activeSelf;
+
+        if (leaderboardOpenedWhileMenusHidden) {
+            SetMenusVisible(true);
+            SetPanelActive(panelMainMenu, false);
+            SetPanelActive(panelCharacterSelect, false);
+            SetPanelActive(panelHowToPlay, false);
+            SetPanelActive(panelPause, false);
+        }
 
         leaderboardUI.Show();
     }
@@ -119,7 +129,12 @@ public class GameFlowController : MonoBehaviour
             panelPause.SetActive(true);
         }
 
+        if (leaderboardOpenedWhileMenusHidden) {
+            SetMenusVisible(false);
+        }
+
         leaderboardOpenedFromPause = false;
+        leaderboardOpenedWhileMenusHidden = false;
     }
 
     public void QuitGame() {

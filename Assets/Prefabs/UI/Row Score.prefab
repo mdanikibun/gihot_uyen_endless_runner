@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 5498283127975284788}
   - component: {fileID: 4344680927572494292}
   - component: {fileID: 8370609970510013418}
+  - component: {fileID: 5123847591023847591}
   m_Layer: 5
   m_Name: Row Score
   m_TagString: Untagged
@@ -127,6 +128,22 @@ MonoBehaviour:
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
   m_ReverseArrangement: 0
+--- !u!114 &5123847591023847591
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 694372624151772939}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa6ab24a14ea95b45a44c3d3f0a710bc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LeaderboardRowUI
+  rankText: {fileID: 6798675141441498790}
+  nameText: {fileID: 2371506482516553119}
+  distanceText: {fileID: 7945888007210737891}
+  scoreText: {fileID: 1041631476863934540}
 --- !u!1 &1538017414352387491
 GameObject:
   m_ObjectHideFlags: 0
