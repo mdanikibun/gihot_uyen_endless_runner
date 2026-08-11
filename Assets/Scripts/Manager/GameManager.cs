@@ -1,5 +1,6 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.UI;
 using TMPro;
 
 public class GameManager : MonoBehaviour
@@ -9,8 +10,13 @@ public class GameManager : MonoBehaviour
     [SerializeField] TMP_Text distanceText;
     [SerializeField] GameObject speedUpCountdownText;
     [SerializeField] GameObject gameOverText;
+    [SerializeField] GameObject gameOverButtonsRoot;
+    [SerializeField] Button restartButton;
+    [SerializeField] Button mainMenuButton;
     [SerializeField] Animator playerAnimator;
     [SerializeField] PlayerController playerController;
+    [SerializeField] GameFlowController gameFlow;
+    [SerializeField] ScoreManager scoreManager;
 
     [Header("Settings")]
     [SerializeField] int health = 5;
@@ -22,13 +28,36 @@ public class GameManager : MonoBehaviour
     const string animJump = "Jump";
     bool isGameOver = false;
     float distanceValue = 0f;
+    int startingHealth;
 
     public bool IsGameOver => isGameOver;
     public float DistanceValue => distanceValue;
 
+    void Awake() {
+        startingHealth = health;
+        EnsureGameOverButtons();
+    }
+
     void Start() {
         Time.timeScale = 1f;
         healthText.text = health.ToString();
+        SetGameOverButtonsVisible(false);
+    }
+
+    public void PrepareForNewRun() {
+        isGameOver = false;
+        health = startingHealth;
+        distanceValue = 0f;
+        Time.timeScale = 1f;
+
+        playerController.enabled = true;
+        gameOverText.SetActive(false);
+        SetGameOverButtonsVisible(false);
+        healthText.text = health.ToString();
+        distanceText.text = "0m";
+        speedUpCountdownText.SetActive(false);
+
+        scoreManager.ResetScore();
     }
 
     public void TakeDamage() {
@@ -47,6 +76,7 @@ public class GameManager : MonoBehaviour
         distanceValue = Mathf.Round(distance);
         distanceText.text = distanceValue + "m";
     }
+
     public void UpdateSpeedUpCountdownText(float countdown) {
         if (isGameOver) return;
 
@@ -80,5 +110,24 @@ public class GameManager : MonoBehaviour
     IEnumerator FreezeAfterSlowMo() {
         yield return new WaitForSecondsRealtime(gameOverSlowMoDuration);
         Time.timeScale = 0f;
+        SetGameOverButtonsVisible(true);
+    }
+
+    void EnsureGameOverButtons() {
+        SetGameOverButtonsVisible(false);
+        restartButton.onClick.AddListener(OnRestartClicked);
+        mainMenuButton.onClick.AddListener(OnMainMenuClicked);
+    }
+
+    void SetGameOverButtonsVisible(bool visible) {
+        gameOverButtonsRoot.SetActive(visible);
+    }
+
+    void OnRestartClicked() {
+        gameFlow.RestartRun();
+    }
+
+    void OnMainMenuClicked() {
+        gameFlow.BackToMainMenu();
     }
 }

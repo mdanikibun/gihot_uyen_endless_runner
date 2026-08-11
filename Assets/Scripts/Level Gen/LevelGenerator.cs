@@ -36,17 +36,27 @@ public class LevelGenerator : MonoBehaviour
     float totalDistance = 0f;
     float speedUpCountdown = 0f;
     bool canCountDistance;
+    bool isDemoMode;
+    bool isPlaying;
+
+    public bool IsDemoMode => isDemoMode;
+    public bool IsPlaying => isPlaying;
+    public float TotalDistance => totalDistance;
 
     void Start() {
         moveSpeed = speedDefault;
         Physics.gravity = new Vector3(Physics.gravity.x, Physics.gravity.y, gravityZDefault);
-        SpawnStartingChunks();
         gameManager = FindAnyObjectByType<GameManager>();
+
+        // Có GameFlow thì để menu gọi EnterDemoMode / ResetForNewRun
+        if (FindAnyObjectByType<GameFlowController>() == null) {
+            SpawnStartingChunks();
+            isPlaying = true;
+        }
     }
 
     void Update() {
         MoveChunks();
-
         UpdateSpeedUpCountdown();
 
         if (canCountDistance) {
@@ -55,6 +65,54 @@ public class LevelGenerator : MonoBehaviour
         }
 
         gameManager.UpdateSpeedUpCountdownText(speedUpCountdown);
+    }
+
+    public void ClearAllChunks() {
+        for (int i = 0; i < chunks.Count; i++) {
+            if (chunks[i] != null) {
+                Destroy(chunks[i]);
+            }
+        }
+
+        chunks.Clear();
+        startingChunks.Clear();
+        chunkSpawnedCount = 0;
+    }
+
+    public void EnterDemoMode() {
+        isDemoMode = true;
+        isPlaying = false;
+        canCountDistance = false;
+        totalDistance = 0f;
+
+        if (speedBuffCoroutine != null) {
+            StopCoroutine(speedBuffCoroutine);
+            speedBuffCoroutine = null;
+        }
+        EndSpeedBuff();
+        ClearAllChunks();
+        SpawnDemoChunks();
+    }
+
+    public void ResetForNewRun() {
+        isDemoMode = false;
+        isPlaying = true;
+        canCountDistance = false;
+        totalDistance = 0f;
+
+        if (speedBuffCoroutine != null) {
+            StopCoroutine(speedBuffCoroutine);
+            speedBuffCoroutine = null;
+        }
+        EndSpeedBuff();
+        ClearAllChunks();
+        SpawnStartingChunks();
+    }
+
+    void SpawnDemoChunks() {
+        while (chunks.Count < chunkCount) {
+            SpawnSingleChunk();
+        }
     }
 
     void UpdateSpeedUpCountdown() {
@@ -152,22 +210,20 @@ public class LevelGenerator : MonoBehaviour
     }
 
     void SpawnStartingChunks() {
-        if (chunkStartingPrefabs != null) {
-            for (int i = 0; i < chunkStartingPrefabs.Length; i++) {
-                if (chunkStartingPrefabs[i] == null) continue;
+        for (int i = 0; i < chunkStartingPrefabs.Length; i++) {
+            if (chunkStartingPrefabs[i] == null) continue;
 
-                float spawnPositionZ = GetSpawnPositionZ();
-                Vector3 spawnPosition = new Vector3(transform.position.x, transform.position.y, spawnPositionZ);
-                GameObject introChunk = Instantiate(chunkStartingPrefabs[i], spawnPosition, Quaternion.identity, chunkParent);
+            float spawnPositionZ = GetSpawnPositionZ();
+            Vector3 spawnPosition = new Vector3(transform.position.x, transform.position.y, spawnPositionZ);
+            GameObject introChunk = Instantiate(chunkStartingPrefabs[i], spawnPosition, Quaternion.identity, chunkParent);
 
-                Chunk introChunkComponent = introChunk.GetComponent<Chunk>();
-                if (introChunkComponent != null) {
-                    introChunkComponent.DisableItemSpawn();
-                }
-
-                chunks.Add(introChunk);
-                startingChunks.Add(introChunk);
+            Chunk introChunkComponent = introChunk.GetComponent<Chunk>();
+            if (introChunkComponent != null) {
+                introChunkComponent.DisableItemSpawn();
             }
+
+            chunks.Add(introChunk);
+            startingChunks.Add(introChunk);
         }
 
         canCountDistance = startingChunks.Count == 0;
