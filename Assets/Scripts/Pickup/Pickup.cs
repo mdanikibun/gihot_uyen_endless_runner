@@ -2,8 +2,8 @@ using UnityEngine;
 
 public abstract class Pickup : MonoBehaviour
 {
-    [Header("Settings")]
-    [SerializeField] float rotationSpeed = 100f;
+    [Header("References")]
+    [SerializeField] protected GameSettings settings;
 
     const string playerTag = "Player";
     Transform visualRoot;
@@ -31,7 +31,7 @@ public abstract class Pickup : MonoBehaviour
 
     void Update() {
         Vector3 worldCenter = visualRoot.TransformPoint(localRotationCenter);
-        visualRoot.RotateAround(worldCenter, Vector3.up, rotationSpeed * Time.deltaTime);
+        visualRoot.RotateAround(worldCenter, Vector3.up, settings.pickup.rotationSpeed * Time.deltaTime);
     }
 
     void OnTriggerEnter(Collider other) {

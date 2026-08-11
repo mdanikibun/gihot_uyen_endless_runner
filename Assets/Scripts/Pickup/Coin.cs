@@ -2,10 +2,6 @@ using UnityEngine;
 
 public class Coin : Pickup
 {
-
-    [Header("Settings")]
-    [SerializeField] int scoreAmount = 10;
-
     ScoreManager scoreManager;
 
     void Start() {
@@ -13,6 +9,6 @@ public class Coin : Pickup
     }
 
     protected override void OnPickup() {
-        scoreManager.AddScore(scoreAmount);
+        scoreManager.AddScore(settings.coin.scoreAmount);
     }
 }

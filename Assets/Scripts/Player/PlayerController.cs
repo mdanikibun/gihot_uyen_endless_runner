@@ -9,11 +9,7 @@ public class PlayerController : MonoBehaviour
     
     [Header("References")]
     [SerializeField] Animator animator;
-
-    [Header("Settings")]
-    [SerializeField] float speed = 10f;
-    [SerializeField] float jumpForce = 0f;
-    [SerializeField] float groundCheckDistance = 0.1f;
+    [SerializeField] GameSettings settings;
 
     const string animJump = "Jump";
     const string animStumbleState = "Stumble";
@@ -32,7 +28,7 @@ public class PlayerController : MonoBehaviour
     }
 
     void HandleMovement() {
-        rb.linearVelocity = new Vector3(movement.x * speed, rb.linearVelocity.y, movement.y * speed);
+        rb.linearVelocity = new Vector3(movement.x * settings.player.speedMoveLeftRight, rb.linearVelocity.y, movement.y * settings.player.speedMoveLeftRight);
     }
 
     public void Jump(InputAction.CallbackContext context) {
@@ -43,7 +39,7 @@ public class PlayerController : MonoBehaviour
         animator.SetTrigger(animJump);
 
         Vector3 velocity = rb.linearVelocity;
-        velocity.y = jumpForce;
+        velocity.y = settings.player.jumpForce;
         rb.linearVelocity = velocity;
     }
     
@@ -67,7 +63,7 @@ public class PlayerController : MonoBehaviour
         }
 
         Vector3 origin = new Vector3(bounds.center.x, bounds.min.y + 0.05f, bounds.center.z);
-        float distance = groundCheckDistance + 0.05f;
+        float distance = settings.player.groundCheckDistance + 0.05f;
 
         if (!Physics.Raycast(origin, Vector3.down, out RaycastHit hit, distance, ~0, QueryTriggerInteraction.Ignore)) {
             return false;

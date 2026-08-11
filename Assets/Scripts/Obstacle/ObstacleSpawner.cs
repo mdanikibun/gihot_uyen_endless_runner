@@ -6,10 +6,7 @@ public class ObstacleSpawner : MonoBehaviour
     [Header("References")]
     [SerializeField] GameObject[] obstaclePrefabs;
     [SerializeField] Transform obstacleParent;
-
-    [Header("Settings")]
-    [SerializeField] float spawnTime = 3f;
-    [SerializeField] float spawnWidth = 4f;
+    [SerializeField] GameSettings settings;
 
     Coroutine spawnCoroutine;
 
@@ -33,10 +30,10 @@ public class ObstacleSpawner : MonoBehaviour
 
     IEnumerator SpawnObstacleCoroutine() {
         while (true) {
-            yield return new WaitForSeconds(spawnTime);
+            yield return new WaitForSeconds(settings.obstacleSpawn.spawnTime);
             GameObject obstaclePrefab = obstaclePrefabs[Random.Range(0, obstaclePrefabs.Length)];
             Vector3 spawnPosition = new Vector3(
-                Random.Range(-spawnWidth, spawnWidth),
+                Random.Range(-settings.obstacleSpawn.spawnWidth, settings.obstacleSpawn.spawnWidth),
                 transform.position.y,
                 transform.position.z
             );

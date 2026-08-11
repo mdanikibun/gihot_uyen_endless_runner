@@ -1109,20 +1109,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LevelGenerator
   cameraController: {fileID: 886835638}
-  chunkStartingPrefabs:
+  segmentStartingPrefabs:
   - {fileID: 2874830076064202412, guid: 7b9881c93062fca4982eb554c1159551, type: 3}
   - {fileID: 2874830076064202412, guid: b5679c6e00283274b923c57467c593a4, type: 3}
   - {fileID: 2874830076064202412, guid: 0510b3878ea699f4881d2ee94606555a, type: 3}
   - {fileID: 2874830076064202412, guid: b90d1d3a80d641f4c92380321d79c5cf, type: 3}
   - {fileID: 2874830076064202412, guid: 4cdc7eed2e0230949a32d9e5e92ca36a, type: 3}
-  chunkGatePrefab: {fileID: 9111903211987156143, guid: 70855564dc5a1fa4ba5cd66a3a2ee20f, type: 3}
-  chunkPrefabs:
+  segmentGatePrefab: {fileID: 9111903211987156143, guid: 70855564dc5a1fa4ba5cd66a3a2ee20f, type: 3}
+  segmentPrefabs:
   - {fileID: 9111903211987156143, guid: 3d1a668a499ef1b44ae6b0deee4662e3, type: 3}
   - {fileID: 9111903211987156143, guid: 8e5a67a93fbeccc44b31be46e083105e, type: 3}
-  chunkParent: {fileID: 1388699426}
-  chunkCount: 15
-  chunkGateInterval: 5
-  chunkLength: 10
+  segmentParent: {fileID: 1388699426}
   speedDefault: 10
   minMoveSpeed: 6
   maxMoveSpeed: 20
@@ -1303,7 +1300,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1388699426}
   m_Layer: 0
-  m_Name: Chunk Parent
+  m_Name: Segment Parent
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

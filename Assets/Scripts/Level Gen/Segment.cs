@@ -1,19 +1,13 @@
 using UnityEngine;
 using System.Collections.Generic;
 
-public class Chunk : MonoBehaviour
+public class Segment : MonoBehaviour
 {
     [Header("References")]
     [SerializeField] GameObject fencePrefab;
     [SerializeField] GameObject powerUpItemPrefab;
     [SerializeField] GameObject coinPrefab;
-
-    [Header("Settings")]
-    [SerializeField] float powerUpItemSpawnChance = 0.3f;
-    [SerializeField] float coinSpawnChance = 0.5f;
-    [SerializeField] float coinSpacing = 2f;
-
-    [SerializeField] float[] lanes = { -3f, 0f, 3f };
+    [SerializeField] GameSettings settings;
 
     List<int> availableLanes = new List<int>();
     readonly List<GameObject> spawnedObjects = new List<GameObject>();
@@ -29,7 +23,6 @@ public class Chunk : MonoBehaviour
         shouldSpawnItems = false;
     }
 
-    // Xóa fence/pickup cũ và random lại. Gọi khi spawn lần đầu hoặc recycle chunk.
     public void Setup() {
         ClearSpawnedContent();
         ResetAvailableLanes();
@@ -49,12 +42,14 @@ public class Chunk : MonoBehaviour
 
     void ResetAvailableLanes() {
         availableLanes.Clear();
+        float[] lanes = settings.segment.lanes;
         for (int i = 0; i < lanes.Length; i++) {
             availableLanes.Add(i);
         }
     }
 
     void SpawnFences() {
+        float[] lanes = settings.segment.lanes;
         int fencesToSpawn = Random.Range(0, lanes.Length);
 
         for (int i = 0; i < fencesToSpawn; i++) {
@@ -67,24 +62,26 @@ public class Chunk : MonoBehaviour
     }
 
     void SpawnPowerUpItems() {
-        if (Random.value > powerUpItemSpawnChance || availableLanes.Count <= 0) return;
+        if (Random.value > settings.segment.powerUpItemSpawnChance || availableLanes.Count <= 0) return;
 
+        float[] lanes = settings.segment.lanes;
         int selectedLane = SelectLane();
         Vector3 spawnPosition = new Vector3(lanes[selectedLane] - .25f, transform.position.y, transform.position.z);
         SpawnChild(powerUpItemPrefab, spawnPosition);
     }
 
     void SpawnCoins() {
-        if (Random.value > coinSpawnChance || availableLanes.Count <= 0) return;
+        if (Random.value > settings.segment.coinSpawnChance || availableLanes.Count <= 0) return;
 
+        float[] lanes = settings.segment.lanes;
         int selectedLane = SelectLane();
 
         int maxCoinsToSpawn = 6;
         int coinToSpawn = Random.Range(1, maxCoinsToSpawn);
-        float topOfChunkZPosition = transform.position.z + coinSpacing * 2f;
+        float topOfSegmentZPosition = transform.position.z + settings.segment.coinSpacing * 2f;
 
         for (int i = 0; i < coinToSpawn; i++) {
-            float spawnZPosition = topOfChunkZPosition - coinSpacing * i;
+            float spawnZPosition = topOfSegmentZPosition - settings.segment.coinSpacing * i;
             Vector3 spawnPosition = new Vector3(lanes[selectedLane] - .25f, transform.position.y, spawnZPosition);
             SpawnChild(coinPrefab, spawnPosition);
         }

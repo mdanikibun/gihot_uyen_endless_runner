@@ -69,8 +69,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1bf45e19a23b996438d1cf7d1f086ff4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Coin
-  rotationSpeed: 100
-  scoreAmount: 10
+  settings: {fileID: 11400000, guid: d8e1a2b3d4f5467890abcdef00000001, type: 2}
 --- !u!1 &8712357087354079286
 GameObject:
   m_ObjectHideFlags: 0

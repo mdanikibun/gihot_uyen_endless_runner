@@ -5,10 +5,7 @@ public class PlayerCollisionHandler : MonoBehaviour
     [Header("References")]
     [SerializeField] Animator animator;
     [SerializeField] GameObject[] obstaclePrefabs;
-
-    [Header("Settings")]
-    [SerializeField] float collisionCooldown = 1f;
-    [SerializeField] float speedChangeAmount = -1f;
+    [SerializeField] GameSettings settings;
 
     float cooldownTimer = 0f;
     const string animHit = "Hit";
@@ -27,14 +24,14 @@ public class PlayerCollisionHandler : MonoBehaviour
     }
     
     void OnCollisionEnter(Collision other) {
-        if (cooldownTimer < collisionCooldown) return;
+        if (cooldownTimer < settings.playerCollision.collisionCooldown) return;
 
         foreach (GameObject obstaclePrefab in obstaclePrefabs) {
             if (other.gameObject.name.Contains(obstaclePrefab.name)) {
                 animator.ResetTrigger(animJump);
                 animator.SetTrigger(animHit);
                 cooldownTimer = 0f;
-                levelGenerator.ChangeChunkMoveSpeed(speedChangeAmount);
+                levelGenerator.ChangeSegmentMoveSpeed(settings.playerCollision.speedChangeAmount);
                 gameManager.TakeDamage();
             }
         }

@@ -44,7 +44,7 @@ GameObject:
   - component: {fileID: 1024662126661393322}
   - component: {fileID: 439709675363796902}
   m_Layer: 0
-  m_Name: Chunk Prefab
+  m_Name: Segment Prefab
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -77,17 +77,11 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 8771ba605b3f9eb4ea4a9166e3bf9387, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Chunk
+  m_EditorClassIdentifier: Assembly-CSharp::Segment
   fencePrefab: {fileID: 7423209185847986581, guid: ecd0a55845dbb7e4d9e8df3be73433f7, type: 3}
   powerUpItemPrefab: {fileID: 8325414306840121778, guid: b8093f641bc914449bee79b9dbb40578, type: 3}
   coinPrefab: {fileID: 5024713153122945422, guid: 0f919459af44cf04da8aa15a50b54b15, type: 3}
-  powerUpItemSpawnChance: 0.05
-  coinSpawnChance: 1
-  coinSpacing: 2
-  lanes:
-  - -3.4
-  - 0
-  - 3.4
+  settings: {fileID: 11400000, guid: d8e1a2b3d4f5467890abcdef00000001, type: 2}
 --- !u!1 &8986583481183501605
 GameObject:
   m_ObjectHideFlags: 0

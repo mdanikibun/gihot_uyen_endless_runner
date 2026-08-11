@@ -6,7 +6,7 @@ using TMPro;
 public class GameManager : MonoBehaviour
 {
     [Header("References")]
-    [SerializeField] TMP_Text healthText;
+    [SerializeField] HealthHeartsUI healthHearts;
     [SerializeField] TMP_Text distanceText;
     [SerializeField] GameObject speedUpCountdownText;
     [SerializeField] GameObject gameOverText;
@@ -18,34 +18,35 @@ public class GameManager : MonoBehaviour
     [SerializeField] PlayerController playerController;
     [SerializeField] GameFlowController gameFlow;
     [SerializeField] ScoreManager scoreManager;
-
-    [Header("Settings")]
-    [SerializeField] int health = 5;
-    [SerializeField] int damageAmount = 1;
-    [SerializeField] float gameOverSlowMoDuration = 10f;
+    [SerializeField] GameSettings settings;
 
     const string animDie = "Die";
     const string animHit = "Hit";
     const string animJump = "Jump";
+    const string animRun = "Root|Run";
     bool isGameOver = false;
     float distanceValue = 0f;
+    int health;
     int startingHealth;
 
     public bool IsGameOver => isGameOver;
     public float DistanceValue => distanceValue;
 
     void Awake() {
-        startingHealth = health;
+        startingHealth = settings.gameplay.startingHealth;
+        health = startingHealth;
         EnsureGameOverButtons();
     }
 
     void Start() {
         Time.timeScale = 1f;
-        healthText.text = health.ToString();
+        healthHearts.SetHealth(health, startingHealth);
         SetGameOverButtonsVisible(false);
     }
 
     public void PrepareForNewRun() {
+        StopAllCoroutines();
+
         isGameOver = false;
         health = startingHealth;
         distanceValue = 0f;
@@ -54,18 +55,30 @@ public class GameManager : MonoBehaviour
         playerController.enabled = true;
         gameOverText.SetActive(false);
         SetGameOverButtonsVisible(false);
-        healthText.text = health.ToString();
-        distanceText.text = "0m";
+        healthHearts.SetHealth(health, startingHealth);
+        distanceText.text = "Distance: 0m";
         speedUpCountdownText.SetActive(false);
+        ResetPlayerAnimatorToRun();
 
         scoreManager.ResetScore();
+    }
+
+    void ResetPlayerAnimatorToRun() {
+        if (playerAnimator == null) return;
+        if (!playerAnimator.isActiveAndEnabled) return;
+        if (playerAnimator.runtimeAnimatorController == null) return;
+
+        playerAnimator.ResetTrigger(animDie);
+        playerAnimator.ResetTrigger(animHit);
+        playerAnimator.ResetTrigger(animJump);
+        playerAnimator.Play(animRun, 0, 0f);
     }
 
     public void TakeDamage() {
         if (isGameOver) return;
         
-        health -= damageAmount;
-        healthText.text = health.ToString();
+        health -= settings.gameplay.damageAmount;
+        healthHearts.SetHealth(health, startingHealth);
         if (health <= 0) {
             GameOver();
         }
@@ -75,7 +88,7 @@ public class GameManager : MonoBehaviour
         if (isGameOver) return;
         
         distanceValue = Mathf.Round(distance);
-        distanceText.text = distanceValue + "m";
+        distanceText.text = "Distance: " + distanceValue + "m";
     }
 
     public void UpdateSpeedUpCountdownText(float countdown) {
@@ -111,7 +124,7 @@ public class GameManager : MonoBehaviour
     }
 
     IEnumerator FreezeAfterSlowMo() {
-        yield return new WaitForSecondsRealtime(gameOverSlowMoDuration);
+        yield return new WaitForSecondsRealtime(settings.gameplay.gameOverSlowMoDuration);
         Time.timeScale = 0f;
         SetGameOverButtonsVisible(true);
     }

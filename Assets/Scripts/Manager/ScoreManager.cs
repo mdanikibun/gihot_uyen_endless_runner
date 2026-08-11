@@ -24,17 +24,14 @@ public class ScoreManager : MonoBehaviour
     [Header("References")]
     [SerializeField] GameManager gameManager;
     [SerializeField] TMP_Text scoreText;
-
-    [Header("Leaderboard")]
-    [SerializeField] int maxEntries = 20;
-    [SerializeField] string fileName = "leaderboard.json";
+    [SerializeField] GameSettings settings;
 
     int score;
     LeaderboardSaveData saveData = new LeaderboardSaveData();
 
     public int Score => score;
 
-    string FilePath => Path.Combine(Application.persistentDataPath, fileName);
+    string FilePath => Path.Combine(Application.persistentDataPath, settings.leaderboard.fileName);
 
     void Awake() {
         Load();
@@ -67,7 +64,7 @@ public class ScoreManager : MonoBehaviour
         saveData.entries = saveData.entries
             .OrderByDescending(e => e.score)
             .ThenByDescending(e => e.distance)
-            .Take(maxEntries)
+            .Take(settings.leaderboard.maxEntries)
             .ToList();
 
         Save();

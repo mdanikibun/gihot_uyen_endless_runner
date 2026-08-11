@@ -1,0 +1,64 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c8e1a2b3d4f5467890abcdef00000001, type: 3}
+  m_Name: GameSettings
+  m_EditorClassIdentifier: 
+  gameplay:
+    startingHealth: 5
+    damageAmount: 1
+    gameOverSlowMoDuration: 7
+  level:
+    segmentCount: 15
+    segmentGateInterval: 5
+    segmentLength: 10
+    speedDefault: 12
+    minMoveSpeed: 6
+    maxMoveSpeed: 22
+    minGravityZ: -22
+    maxGravityZ: -6
+    buffDuration: 10
+    stumbleDuration: 1
+  segment:
+    powerUpItemSpawnChance: 0.05
+    coinSpawnChance: 1
+    coinSpacing: 2
+    lanes:
+    - -3.4
+    - 0
+    - 3.4
+  player:
+    speedMoveLeftRight: 5
+    jumpForce: 4
+    groundCheckDistance: 0.1
+  playerCollision:
+    collisionCooldown: 1
+    speedChangeAmount: -1
+  camera:
+    minFOV: 40
+    maxFOV: 85
+    zoomDuration: 1
+    zoomSpeed: 5
+  obstacleSpawn:
+    spawnTime: 3
+    spawnWidth: 4
+  pickup:
+    rotationSpeed: 100
+  coin:
+    scoreAmount: 10
+  powerUp:
+    speedChangeAmount: 4
+  characterSelect:
+    normalSlotColor: {r: 1, g: 1, b: 1, a: 1}
+    selectedSlotColor: {r: 1, g: 0.85, b: 0.2, a: 1}
+  leaderboard:
+    maxEntries: 20
+    fileName: leaderboard.json

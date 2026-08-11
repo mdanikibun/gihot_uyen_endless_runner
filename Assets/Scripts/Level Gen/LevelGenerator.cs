@@ -6,31 +6,20 @@ public class LevelGenerator : MonoBehaviour
 {
     [Header("References")]
     [SerializeField] CameraController cameraController;
-    [SerializeField] GameObject[] chunkStartingPrefabs;
-    [SerializeField] GameObject chunkGatePrefab;
-    [SerializeField] GameObject[] chunkPrefabs;
-    [SerializeField] Transform chunkParent;
-
-    [Header("Settings")]
-    [SerializeField] int chunkCount = 12;
-    [SerializeField] int chunkGateInterval = 8;
-    [SerializeField] float chunkLength = 10f;
-    [SerializeField] float speedDefault = 10f;
-    [SerializeField] float minMoveSpeed = 2f;
-    [SerializeField] float maxMoveSpeed = 20f;
-    [SerializeField] float minGravityZ = -22f;
-    [SerializeField] float maxGravityZ = -2f;
-    [SerializeField] float buffDuration = 5f;
-    [SerializeField] float stumbleDuration = 1f;
+    [SerializeField] GameObject[] segmentStartingPrefabs;
+    [SerializeField] GameObject segmentGatePrefab;
+    [SerializeField] GameObject[] segmentPrefabs;
+    [SerializeField] Transform segmentParent;
+    [SerializeField] GameSettings settings;
 
     GameManager gameManager;
     Coroutine speedBuffCoroutine;
 
-    List<GameObject> chunks = new List<GameObject>();
-    readonly HashSet<GameObject> startingChunks = new HashSet<GameObject>();
+    List<GameObject> segments = new List<GameObject>();
+    readonly HashSet<GameObject> startingSegments = new HashSet<GameObject>();
 
     readonly float gravityZDefault = -9.81f;
-    int chunkSpawnedCount = 0;
+    int segmentSpawnedCount = 0;
     float moveSpeed;
     float activeSpeedAmount;
     float totalDistance = 0f;
@@ -44,19 +33,19 @@ public class LevelGenerator : MonoBehaviour
     public float TotalDistance => totalDistance;
 
     void Start() {
-        moveSpeed = speedDefault;
+        moveSpeed = settings.level.speedDefault;
         Physics.gravity = new Vector3(Physics.gravity.x, Physics.gravity.y, gravityZDefault);
         gameManager = FindAnyObjectByType<GameManager>();
 
         // Có GameFlow thì để menu gọi EnterDemoMode / ResetForNewRun
         if (FindAnyObjectByType<GameFlowController>() == null) {
-            SpawnStartingChunks();
+            SpawnStartingSegments();
             isPlaying = true;
         }
     }
 
     void Update() {
-        MoveChunks();
+        MoveSegments();
         UpdateSpeedUpCountdown();
 
         if (canCountDistance) {
@@ -67,16 +56,16 @@ public class LevelGenerator : MonoBehaviour
         gameManager.UpdateSpeedUpCountdownText(speedUpCountdown);
     }
 
-    public void ClearAllChunks() {
-        for (int i = 0; i < chunks.Count; i++) {
-            if (chunks[i] != null) {
-                Destroy(chunks[i]);
+    public void ClearAllSegments() {
+        for (int i = 0; i < segments.Count; i++) {
+            if (segments[i] != null) {
+                Destroy(segments[i]);
             }
         }
 
-        chunks.Clear();
-        startingChunks.Clear();
-        chunkSpawnedCount = 0;
+        segments.Clear();
+        startingSegments.Clear();
+        segmentSpawnedCount = 0;
     }
 
     public void EnterDemoMode() {
@@ -86,8 +75,8 @@ public class LevelGenerator : MonoBehaviour
         totalDistance = 0f;
 
         ClearAllSpeedEffects();
-        ClearAllChunks();
-        SpawnDemoChunks();
+        ClearAllSegments();
+        SpawnDemoSegments();
     }
 
     public void ResetForNewRun() {
@@ -97,13 +86,13 @@ public class LevelGenerator : MonoBehaviour
         totalDistance = 0f;
 
         ClearAllSpeedEffects();
-        ClearAllChunks();
-        SpawnStartingChunks();
+        ClearAllSegments();
+        SpawnStartingSegments();
     }
 
-    void SpawnDemoChunks() {
-        while (chunks.Count < chunkCount) {
-            SpawnSingleChunk();
+    void SpawnDemoSegments() {
+        while (segments.Count < settings.level.segmentCount) {
+            SpawnSingleSegment();
         }
     }
 
@@ -118,7 +107,7 @@ public class LevelGenerator : MonoBehaviour
         }
     }
 
-    public void ChangeChunkMoveSpeed(float speedAmount) {
+    public void ChangeSegmentMoveSpeed(float speedAmount) {
         if (speedAmount < 0f) {
             StartStumble(speedAmount);
             return;
@@ -129,7 +118,7 @@ public class LevelGenerator : MonoBehaviour
 
     void StartOrStackSpeedUp(float speedAmount) {
         if (activeSpeedAmount > 0f && speedUpCountdown > 0f) {
-            speedUpCountdown += buffDuration;
+            speedUpCountdown += settings.level.buffDuration;
             return;
         }
 
@@ -140,7 +129,7 @@ public class LevelGenerator : MonoBehaviour
         }
 
         ApplySpeedChange(speedAmount);
-        speedUpCountdown = buffDuration;
+        speedUpCountdown = settings.level.buffDuration;
     }
 
     void StartStumble(float speedAmount) {
@@ -160,28 +149,28 @@ public class LevelGenerator : MonoBehaviour
 
     IEnumerator StumbleRoutine(float speedAmount) {
         ApplySpeedChange(speedAmount);
-        yield return new WaitForSeconds(stumbleDuration);
+        yield return new WaitForSeconds(settings.level.stumbleDuration);
         EndSpeedBuff();
         speedBuffCoroutine = null;
     }
 
     void ApplySpeedChange(float speedAmount) {
-        float newMoveSpeed = Mathf.Clamp(speedDefault + speedAmount, minMoveSpeed, maxMoveSpeed);
-        if (Mathf.Approximately(newMoveSpeed, moveSpeed) && Mathf.Approximately(newMoveSpeed, speedDefault)) {
+        float newMoveSpeed = Mathf.Clamp(settings.level.speedDefault + speedAmount, settings.level.minMoveSpeed, settings.level.maxMoveSpeed);
+        if (Mathf.Approximately(newMoveSpeed, moveSpeed) && Mathf.Approximately(newMoveSpeed, settings.level.speedDefault)) {
             return;
         }
 
         moveSpeed = newMoveSpeed;
 
-        if (speedAmount > speedDefault) {
-            float newGravityZ = Mathf.Clamp(gravityZDefault - speedAmount, minGravityZ, maxGravityZ);
+        if (speedAmount > settings.level.speedDefault) {
+            float newGravityZ = Mathf.Clamp(gravityZDefault - speedAmount, settings.level.minGravityZ, settings.level.maxGravityZ);
             Physics.gravity = new Vector3(Physics.gravity.x, Physics.gravity.y, newGravityZ);
         }
 
         activeSpeedAmount = speedAmount;
 
         if (cameraController != null) {
-            cameraController.ChangeCameraFOV(speedAmount, moveSpeed, speedDefault);
+            cameraController.ChangeCameraFOV(speedAmount, moveSpeed, settings.level.speedDefault);
         }
     }
 
@@ -199,101 +188,103 @@ public class LevelGenerator : MonoBehaviour
         speedUpCountdown = 0f;
         ResetSpeedToDefault();
 
-        cameraController.ResetToDefault();
+        if (cameraController != null) {
+            cameraController.ResetToDefault();
+        }
     }
 
     void ResetSpeedToDefault() {
-        moveSpeed = speedDefault;
+        moveSpeed = settings.level.speedDefault;
         Physics.gravity = new Vector3(Physics.gravity.x, Physics.gravity.y, gravityZDefault);
     }
 
-    void SpawnStartingChunks() {
-        for (int i = 0; i < chunkStartingPrefabs.Length; i++) {
-            if (chunkStartingPrefabs[i] == null) continue;
+    void SpawnStartingSegments() {
+        for (int i = 0; i < segmentStartingPrefabs.Length; i++) {
+            if (segmentStartingPrefabs[i] == null) continue;
 
             float spawnPositionZ = GetSpawnPositionZ();
             Vector3 spawnPosition = new Vector3(transform.position.x, transform.position.y, spawnPositionZ);
-            GameObject introChunk = Instantiate(chunkStartingPrefabs[i], spawnPosition, Quaternion.identity, chunkParent);
+            GameObject introSegment = Instantiate(segmentStartingPrefabs[i], spawnPosition, Quaternion.identity, segmentParent);
 
-            Chunk introChunkComponent = introChunk.GetComponent<Chunk>();
-            if (introChunkComponent != null) {
-                introChunkComponent.DisableItemSpawn();
+            Segment introSegmentComponent = introSegment.GetComponent<Segment>();
+            if (introSegmentComponent != null) {
+                introSegmentComponent.DisableItemSpawn();
             }
 
-            chunks.Add(introChunk);
-            startingChunks.Add(introChunk);
+            segments.Add(introSegment);
+            startingSegments.Add(introSegment);
         }
 
-        canCountDistance = startingChunks.Count == 0;
+        canCountDistance = startingSegments.Count == 0;
 
-        while (chunks.Count < chunkCount) {
-            SpawnSingleChunk();
+        while (segments.Count < settings.level.segmentCount) {
+            SpawnSingleSegment();
         }
     }
 
-    void SpawnSingleChunk() {
+    void SpawnSingleSegment() {
         float spawnPositionZ = GetSpawnPositionZ();
         Vector3 spawnPosition = new Vector3(transform.position.x, transform.position.y, spawnPositionZ);
 
-        GameObject newChunk;
-        if (chunkSpawnedCount % chunkGateInterval == 0 && chunkSpawnedCount > 0) {
-            newChunk = Instantiate(chunkGatePrefab, spawnPosition, Quaternion.identity, chunkParent);
+        GameObject newSegment;
+        if (segmentSpawnedCount % settings.level.segmentGateInterval == 0 && segmentSpawnedCount > 0) {
+            newSegment = Instantiate(segmentGatePrefab, spawnPosition, Quaternion.identity, segmentParent);
         } else {
-            newChunk = Instantiate(chunkPrefabs[Random.Range(0, chunkPrefabs.Length)], spawnPosition, Quaternion.identity, chunkParent);
+            newSegment = Instantiate(segmentPrefabs[Random.Range(0, segmentPrefabs.Length)], spawnPosition, Quaternion.identity, segmentParent);
         }
-        chunks.Add(newChunk);
-        chunkSpawnedCount++;
+        segments.Add(newSegment);
+        segmentSpawnedCount++;
     }
 
-    void RecycleChunk(GameObject chunk) {
-        chunks.Remove(chunk);
-        chunk.SetActive(false);
+    void RecycleSegment(GameObject segment) {
+        segments.Remove(segment);
+        segment.SetActive(false);
 
         float spawnPositionZ = GetSpawnPositionZ();
-        chunk.transform.position = new Vector3(transform.position.x, transform.position.y, spawnPositionZ);
+        segment.transform.position = new Vector3(transform.position.x, transform.position.y, spawnPositionZ);
 
-        Chunk chunkComponent = chunk.GetComponent<Chunk>();
-        if (chunkComponent != null) {
-            chunkComponent.Setup();
+        Segment segmentComponent = segment.GetComponent<Segment>();
+        if (segmentComponent != null) {
+            segmentComponent.Setup();
         }
 
-        chunks.Add(chunk);
-        chunk.SetActive(true);
+        segments.Add(segment);
+        segment.SetActive(true);
     }
 
-    void RemoveStartingChunk(GameObject chunk) {
-        chunks.Remove(chunk);
-        startingChunks.Remove(chunk);
-        Destroy(chunk);
+    void RemoveStartingSegment(GameObject segment) {
+        segments.Remove(segment);
+        startingSegments.Remove(segment);
+        Destroy(segment);
 
-        SpawnSingleChunk();
+        SpawnSingleSegment();
 
-        if (startingChunks.Count == 0) {
+        if (startingSegments.Count == 0) {
             canCountDistance = true;
         }
     }
 
     float GetSpawnPositionZ() {
-        if (chunks.Count == 0) {
+        if (segments.Count == 0) {
             return transform.position.z;
         }
 
-        return chunks[chunks.Count - 1].transform.position.z + chunkLength;
+        return segments[segments.Count - 1].transform.position.z + settings.level.segmentLength;
     }
 
-    void MoveChunks() {
-        float recycleZ = Camera.main.transform.position.z - chunkLength;
+    void MoveSegments() {
+        float recycleZ = Camera.main.transform.position.z - settings.level.segmentLength;
 
-        for (int i = 0; i < chunks.Count; i++) {
-            chunks[i].transform.Translate(-transform.forward * (moveSpeed * Time.deltaTime));
+        for (int i = 0; i < segments.Count; i++) {
+            segments[i].transform.Translate(-transform.forward * (moveSpeed * Time.deltaTime));
         }
 
-        while (chunks.Count > 0 && chunks[0].transform.position.z <= recycleZ) {
-            GameObject frontChunk = chunks[0];
-            if (startingChunks.Contains(frontChunk)) {
-                RemoveStartingChunk(frontChunk);
+        while (segments.Count > 0 && segments[0].transform.position.z <= recycleZ) {
+            GameObject frontSegment = segments[0];
+            if (startingSegments.Contains(frontSegment)) {
+                RemoveStartingSegment(frontSegment);
             } else {
-                RecycleChunk(frontChunk);
+                RecycleSegment(frontSegment);
             }
         }
     }

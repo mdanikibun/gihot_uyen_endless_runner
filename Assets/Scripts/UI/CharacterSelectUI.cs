@@ -10,10 +10,7 @@ public class CharacterSelectUI : MonoBehaviour
     [SerializeField] Button[] characterSlots;
     [SerializeField] Button nextButton;
     [SerializeField] CharacterOption[] characters;
-
-    [Header("Settings")]
-    [SerializeField] Color normalSlotColor = Color.white;
-    [SerializeField] Color selectedSlotColor = new Color(1f, 0.85f, 0.2f, 1f);
+    [SerializeField] GameSettings settings;
 
     int selectedIndex = -1;
 
@@ -79,7 +76,7 @@ public class CharacterSelectUI : MonoBehaviour
 
         for (int i = 0; i < characterSlots.Length; i++) {
             Image image = characterSlots[i].targetGraphic as Image;
-            image.color = i == selectedIndex ? selectedSlotColor : normalSlotColor;
+            image.color = i == selectedIndex ? settings.characterSelect.selectedSlotColor : settings.characterSelect.normalSlotColor;
         }
     }
 
