@@ -11,6 +11,7 @@ public class LevelGenerator : MonoBehaviour
     [SerializeField] GameObject[] segmentPrefabs;
     [SerializeField] Transform segmentParent;
     [SerializeField] PoolManager poolManager;
+    [SerializeField] Animator playerAnimator;
     [SerializeField] GameSettings settings;
 
     GameManager gameManager;
@@ -20,6 +21,7 @@ public class LevelGenerator : MonoBehaviour
     readonly HashSet<GameObject> startingSegments = new HashSet<GameObject>();
 
     readonly float gravityZDefault = -9.81f;
+    const string animRunSpeed = "RunAnimSpeed";
     int segmentSpawnedCount = 0;
     float moveSpeed;
     float activeSpeedAmount;
@@ -191,6 +193,7 @@ public class LevelGenerator : MonoBehaviour
         }
 
         activeSpeedAmount = speedAmount;
+        UpdateRunAnimSpeed();
 
         if (cameraController != null) {
             cameraController.ChangeCameraFOV(speedAmount, moveSpeed, settings.level.speedDefault);
@@ -210,10 +213,28 @@ public class LevelGenerator : MonoBehaviour
         activeSpeedAmount = 0f;
         speedUpCountdown = 0f;
         ResetSpeedToDefault();
+        UpdateRunAnimSpeed();
 
         if (cameraController != null) {
             cameraController.ResetToDefault();
         }
+    }
+
+    void UpdateRunAnimSpeed() {
+        if (playerAnimator == null) return;
+        if (!playerAnimator.isActiveAndEnabled) return;
+        if (playerAnimator.runtimeAnimatorController == null) return;
+
+        float animSpeed = 1f;
+        if (activeSpeedAmount > 0f && settings.level.speedDefault > 0f) {
+            animSpeed = Mathf.Clamp(
+                moveSpeed / settings.level.speedDefault,
+                1f,
+                settings.powerUp.runAnimSpeedMax
+            );
+        }
+
+        playerAnimator.SetFloat(animRunSpeed, animSpeed);
     }
 
     void ResetSpeedToDefault() {

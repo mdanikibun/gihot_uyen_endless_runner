@@ -8,10 +8,22 @@ public abstract class Pickup : MonoBehaviour
     const string playerTag = "Player";
     Transform visualRoot;
     Vector3 localRotationCenter;
+    Vector3 centerInRootLocal;
+    Vector3 initialLocalPosition;
+    Quaternion initialLocalRotation;
 
     void Awake() {
         visualRoot = transform.childCount > 0 ? transform.GetChild(0) : transform;
         CacheRotationCenter();
+
+        initialLocalPosition = visualRoot.localPosition;
+        initialLocalRotation = visualRoot.localRotation;
+        centerInRootLocal = transform.InverseTransformPoint(visualRoot.TransformPoint(localRotationCenter));
+    }
+
+    void OnEnable() {
+        visualRoot.localPosition = initialLocalPosition;
+        visualRoot.localRotation = initialLocalRotation;
     }
 
     void CacheRotationCenter() {
@@ -30,8 +42,13 @@ public abstract class Pickup : MonoBehaviour
     }
 
     void Update() {
-        Vector3 worldCenter = visualRoot.TransformPoint(localRotationCenter);
-        visualRoot.RotateAround(worldCenter, Vector3.up, settings.pickup.rotationSpeed * Time.deltaTime);
+        float angle = settings.pickup.rotationSpeed * Time.time;
+        Quaternion spin = Quaternion.AngleAxis(angle, Vector3.up);
+
+        visualRoot.localRotation = spin * initialLocalRotation;
+
+        Vector3 currentCenterLocal = transform.InverseTransformPoint(visualRoot.TransformPoint(localRotationCenter));
+        visualRoot.localPosition += centerInRootLocal - currentCenterLocal;
     }
 
     void OnTriggerEnter(Collider other) {

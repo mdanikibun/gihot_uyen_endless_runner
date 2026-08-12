@@ -85,6 +85,7 @@ public class PlayerSettings
     public float speedMoveLeftRight = 10f;
     public float jumpForce = 4f;
     public float groundCheckDistance = 0.1f;
+    public float wallCheckDistance = 0.12f;
 }
 
 [Serializable]
@@ -127,6 +128,7 @@ public class CoinSettings
 public class PowerUpSettings
 {
     public float speedChangeAmount = 2f;
+    public float runAnimSpeedMax = 10f;
 }
 
 [Serializable]

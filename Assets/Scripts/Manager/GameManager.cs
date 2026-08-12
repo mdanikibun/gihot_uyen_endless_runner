@@ -24,6 +24,7 @@ public class GameManager : MonoBehaviour
     const string animHit = "Hit";
     const string animJump = "Jump";
     const string animRun = "Root|Run";
+    const string animRunSpeed = "RunAnimSpeed";
     bool isGameOver = false;
     float distanceValue = 0f;
     int health;
@@ -71,6 +72,7 @@ public class GameManager : MonoBehaviour
         playerAnimator.ResetTrigger(animDie);
         playerAnimator.ResetTrigger(animHit);
         playerAnimator.ResetTrigger(animJump);
+        playerAnimator.SetFloat(animRunSpeed, 1f);
         playerAnimator.Play(animRun, 0, 0f);
     }
 
@@ -115,6 +117,7 @@ public class GameManager : MonoBehaviour
         if (playerAnimator != null) {
             playerAnimator.ResetTrigger(animJump);
             playerAnimator.ResetTrigger(animHit);
+            playerAnimator.SetFloat(animRunSpeed, 1f);
             playerAnimator.SetTrigger(animDie);
         }
         yield return new WaitForSecondsRealtime(.25f);

@@ -5105,6 +5105,7 @@ MonoBehaviour:
   - {fileID: 9111903211987156143, guid: 8e5a67a93fbeccc44b31be46e083105e, type: 3}
   segmentParent: {fileID: 1388699426}
   poolManager: {fileID: 2880010002}
+  playerAnimator: {fileID: 355492649}
   settings: {fileID: 11400000, guid: d8e1a2b3d4f5467890abcdef00000001, type: 2}
 --- !u!4 &1119039603
 Transform:
