@@ -1584,7 +1584,7 @@ Transform:
   m_GameObject: {fileID: 458581777}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: -30, z: 0}
+  m_LocalPosition: {x: 0, y: -7.5, z: 0}
   m_LocalScale: {x: 300, y: 10, z: 500}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -5104,6 +5104,7 @@ MonoBehaviour:
   - {fileID: 9111903211987156143, guid: 3d1a668a499ef1b44ae6b0deee4662e3, type: 3}
   - {fileID: 9111903211987156143, guid: 8e5a67a93fbeccc44b31be46e083105e, type: 3}
   segmentParent: {fileID: 1388699426}
+  poolManager: {fileID: 2880010002}
   settings: {fileID: 11400000, guid: d8e1a2b3d4f5467890abcdef00000001, type: 2}
 --- !u!4 &1119039603
 Transform:
@@ -7422,6 +7423,7 @@ MonoBehaviour:
   - {fileID: 6424953070558421770, guid: 193c7efe9cfb502439683e441b29e987, type: 3}
   - {fileID: 6424953070558421770, guid: 193c7efe9cfb502439683e441b29e987, type: 3}
   obstacleParent: {fileID: 903442633}
+  poolManager: {fileID: 2880010002}
   settings: {fileID: 11400000, guid: d8e1a2b3d4f5467890abcdef00000001, type: 2}
 --- !u!4 &1762800718
 Transform:
@@ -13716,6 +13718,50 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2104067548}
   m_CullTransparentMesh: 1
+--- !u!1 &2880010001
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2880010003}
+  - component: {fileID: 2880010002}
+  m_Layer: 0
+  m_Name: Pool Manager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &2880010002
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2880010001}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a1b2c3d4e5f60718293a4b5c6d7e8003, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PoolManager
+--- !u!4 &2880010003
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2880010001}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &8081360663298575299
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -13803,6 +13849,7 @@ SceneRoots:
   - {fileID: 1087761375}
   - {fileID: 910000002}
   - {fileID: 1119039603}
+  - {fileID: 2880010003}
   - {fileID: 8081360663298575299}
   - {fileID: 1388699426}
   - {fileID: 1762800718}

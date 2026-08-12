@@ -3,7 +3,14 @@ using UnityEngine;
 public class ObstacleDestroyer : MonoBehaviour
 {
     void OnTriggerEnter(Collider other) {
-        Destroy(other.gameObject);
-    }
+        PooledObject pooled = other.GetComponentInParent<PooledObject>(true);
+        if (pooled != null) {
+            pooled.ReturnToPool();
+            return;
+        }
 
+        if (other.gameObject.activeInHierarchy) {
+            Destroy(other.gameObject);
+        }
+    }
 }

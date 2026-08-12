@@ -37,6 +37,13 @@ public abstract class Pickup : MonoBehaviour
     void OnTriggerEnter(Collider other) {
         if (other.CompareTag(playerTag)) {
             OnPickup();
+
+            PooledObject pooled = GetComponent<PooledObject>();
+            if (pooled != null) {
+                pooled.ReturnToPool();
+                return;
+            }
+
             Destroy(gameObject);
         }
     }

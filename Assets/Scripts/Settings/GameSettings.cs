@@ -62,6 +62,9 @@ public class LevelSettings
     public float maxGravityZ = -2f;
     public float buffDuration = 5f;
     public float stumbleDuration = 1f;
+    public int segmentPoolSize = 10;
+    public int gatePoolSize = 4;
+    public int startingPoolSize = 2;
 }
 
 [Serializable]
@@ -71,6 +74,9 @@ public class SegmentSettings
     public float coinSpawnChance = 0.5f;
     public float coinSpacing = 2f;
     public float[] lanes = { -3f, 0f, 3f };
+    public int fencePoolSize = 30;
+    public int coinPoolSize = 100;
+    public int powerUpPoolSize = 15;
 }
 
 [Serializable]
@@ -102,6 +108,7 @@ public class ObstacleSpawnSettings
 {
     public float spawnTime = 3f;
     public float spawnWidth = 4f;
+    public int poolSize = 8;
 }
 
 [Serializable]

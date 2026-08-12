@@ -10,6 +10,7 @@ public class LevelGenerator : MonoBehaviour
     [SerializeField] GameObject segmentGatePrefab;
     [SerializeField] GameObject[] segmentPrefabs;
     [SerializeField] Transform segmentParent;
+    [SerializeField] PoolManager poolManager;
     [SerializeField] GameSettings settings;
 
     GameManager gameManager;
@@ -31,6 +32,10 @@ public class LevelGenerator : MonoBehaviour
     public bool IsDemoMode => isDemoMode;
     public bool IsPlaying => isPlaying;
     public float TotalDistance => totalDistance;
+
+    void Awake() {
+        RegisterSegmentPools();
+    }
 
     void Start() {
         moveSpeed = settings.level.speedDefault;
@@ -56,10 +61,28 @@ public class LevelGenerator : MonoBehaviour
         gameManager.UpdateSpeedUpCountdownText(speedUpCountdown);
     }
 
+    void RegisterSegmentPools() {
+        for (int i = 0; i < segmentPrefabs.Length; i++) {
+            if (segmentPrefabs[i] != null) {
+                poolManager.EnsurePool(segmentPrefabs[i], settings.level.segmentPoolSize);
+            }
+        }
+
+        if (segmentGatePrefab != null) {
+            poolManager.EnsurePool(segmentGatePrefab, settings.level.gatePoolSize);
+        }
+
+        for (int i = 0; i < segmentStartingPrefabs.Length; i++) {
+            if (segmentStartingPrefabs[i] != null) {
+                poolManager.EnsurePool(segmentStartingPrefabs[i], settings.level.startingPoolSize);
+            }
+        }
+    }
+
     public void ClearAllSegments() {
         for (int i = 0; i < segments.Count; i++) {
             if (segments[i] != null) {
-                Destroy(segments[i]);
+                ReturnSegment(segments[i]);
             }
         }
 
@@ -204,13 +227,14 @@ public class LevelGenerator : MonoBehaviour
 
             float spawnPositionZ = GetSpawnPositionZ();
             Vector3 spawnPosition = new Vector3(transform.position.x, transform.position.y, spawnPositionZ);
-            GameObject introSegment = Instantiate(segmentStartingPrefabs[i], spawnPosition, Quaternion.identity, segmentParent);
+            GameObject introSegment = SpawnSegmentFromPool(segmentStartingPrefabs[i], spawnPosition, false);
 
             Segment introSegmentComponent = introSegment.GetComponent<Segment>();
             if (introSegmentComponent != null) {
                 introSegmentComponent.DisableItemSpawn();
             }
 
+            introSegment.SetActive(true);
             segments.Add(introSegment);
             startingSegments.Add(introSegment);
         }
@@ -226,36 +250,72 @@ public class LevelGenerator : MonoBehaviour
         float spawnPositionZ = GetSpawnPositionZ();
         Vector3 spawnPosition = new Vector3(transform.position.x, transform.position.y, spawnPositionZ);
 
-        GameObject newSegment;
+        GameObject prefab;
         if (segmentSpawnedCount % settings.level.segmentGateInterval == 0 && segmentSpawnedCount > 0) {
-            newSegment = Instantiate(segmentGatePrefab, spawnPosition, Quaternion.identity, segmentParent);
+            prefab = segmentGatePrefab;
         } else {
-            newSegment = Instantiate(segmentPrefabs[Random.Range(0, segmentPrefabs.Length)], spawnPosition, Quaternion.identity, segmentParent);
+            prefab = segmentPrefabs[Random.Range(0, segmentPrefabs.Length)];
         }
+
+        GameObject newSegment = SpawnSegmentFromPool(prefab, spawnPosition, true);
         segments.Add(newSegment);
         segmentSpawnedCount++;
     }
 
+    GameObject SpawnSegmentFromPool(GameObject prefab, Vector3 spawnPosition, bool activate) {
+        GameObject segment = poolManager.GetInactive(prefab);
+        segment.transform.SetParent(segmentParent, false);
+        segment.transform.SetPositionAndRotation(spawnPosition, Quaternion.identity);
+        if (activate) {
+            segment.SetActive(true);
+            SetupSegment(segment);
+        }
+        return segment;
+    }
+
+    void SetupSegment(GameObject segment) {
+        Segment segmentComponent = segment.GetComponent<Segment>();
+        if (segmentComponent == null) return;
+
+        segmentComponent.PrepareForReuse();
+        segmentComponent.Setup();
+    }
+
+    void ReturnSegment(GameObject segment) {
+        Segment segmentComponent = segment.GetComponent<Segment>();
+        if (segmentComponent != null) {
+            segmentComponent.ReleaseSpawnedContent();
+        }
+
+        poolManager.Return(segment);
+    }
+
     void RecycleSegment(GameObject segment) {
         segments.Remove(segment);
+
+        Segment segmentComponent = segment.GetComponent<Segment>();
+        if (segmentComponent != null) {
+            segmentComponent.ReleaseSpawnedContent();
+        }
+
         segment.SetActive(false);
 
         float spawnPositionZ = GetSpawnPositionZ();
         segment.transform.position = new Vector3(transform.position.x, transform.position.y, spawnPositionZ);
 
-        Segment segmentComponent = segment.GetComponent<Segment>();
-        if (segmentComponent != null) {
-            segmentComponent.Setup();
-        }
-
         segments.Add(segment);
         segment.SetActive(true);
+
+        if (segmentComponent != null) {
+            segmentComponent.PrepareForReuse();
+            segmentComponent.Setup();
+        }
     }
 
     void RemoveStartingSegment(GameObject segment) {
         segments.Remove(segment);
         startingSegments.Remove(segment);
-        Destroy(segment);
+        ReturnSegment(segment);
 
         SpawnSingleSegment();
 

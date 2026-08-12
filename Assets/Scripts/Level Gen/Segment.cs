@@ -13,28 +13,47 @@ public class Segment : MonoBehaviour
     readonly List<GameObject> spawnedObjects = new List<GameObject>();
     bool shouldSpawnItems = true;
 
-    void Start() {
-        if (shouldSpawnItems) {
-            Setup();
-        }
+    void Awake() {
+        RegisterItemPools();
     }
 
     public void DisableItemSpawn() {
         shouldSpawnItems = false;
     }
 
+    public void PrepareForReuse() {
+        shouldSpawnItems = true;
+    }
+
+    public void ReleaseSpawnedContent() {
+        ClearSpawnedContent();
+    }
+
     public void Setup() {
         ClearSpawnedContent();
+        if (!shouldSpawnItems) return;
+
         ResetAvailableLanes();
         SpawnFences();
         SpawnPowerUpItems();
         SpawnCoins();
     }
 
+    void RegisterItemPools() {
+        PoolManager poolManager = PoolManager.Instance;
+        poolManager.EnsurePool(fencePrefab, settings.segment.fencePoolSize);
+        poolManager.EnsurePool(coinPrefab, settings.segment.coinPoolSize);
+        poolManager.EnsurePool(powerUpItemPrefab, settings.segment.powerUpPoolSize);
+    }
+
     void ClearSpawnedContent() {
         for (int i = 0; i < spawnedObjects.Count; i++) {
-            if (spawnedObjects[i] != null) {
-                Destroy(spawnedObjects[i]);
+            GameObject spawned = spawnedObjects[i];
+            if (spawned == null) continue;
+
+            PooledObject pooled = spawned.GetComponent<PooledObject>();
+            if (pooled != null) {
+                pooled.ReturnToPool();
             }
         }
         spawnedObjects.Clear();
@@ -90,7 +109,11 @@ public class Segment : MonoBehaviour
     void SpawnChild(GameObject prefab, Vector3 worldPosition) {
         if (prefab == null) return;
 
-        GameObject instance = Instantiate(prefab, worldPosition, Quaternion.identity, transform);
+        GameObject instance = PoolManager.Instance.GetInactive(prefab);
+        instance.transform.SetParent(transform, false);
+        instance.transform.position = worldPosition;
+        instance.transform.rotation = Quaternion.identity;
+        instance.SetActive(true);
         spawnedObjects.Add(instance);
     }
 

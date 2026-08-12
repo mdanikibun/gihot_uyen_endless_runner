@@ -22,11 +22,14 @@ MonoBehaviour:
     segmentLength: 10
     speedDefault: 12
     minMoveSpeed: 6
-    maxMoveSpeed: 22
+    maxMoveSpeed: 21
     minGravityZ: -22
     maxGravityZ: -6
     buffDuration: 10
     stumbleDuration: 1
+    segmentPoolSize: 10
+    gatePoolSize: 4
+    startingPoolSize: 2
   segment:
     powerUpItemSpawnChance: 0.05
     coinSpawnChance: 1
@@ -35,6 +38,9 @@ MonoBehaviour:
     - -3.4
     - 0
     - 3.4
+    fencePoolSize: 30
+    coinPoolSize: 100
+    powerUpPoolSize: 15
   player:
     speedMoveLeftRight: 5
     jumpForce: 4
@@ -50,12 +56,13 @@ MonoBehaviour:
   obstacleSpawn:
     spawnTime: 3
     spawnWidth: 4
+    poolSize: 8
   pickup:
     rotationSpeed: 100
   coin:
     scoreAmount: 10
   powerUp:
-    speedChangeAmount: 4
+    speedChangeAmount: 3
   characterSelect:
     normalSlotColor: {r: 1, g: 1, b: 1, a: 1}
     selectedSlotColor: {r: 1, g: 0.85, b: 0.2, a: 1}
