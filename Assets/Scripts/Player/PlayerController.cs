@@ -21,6 +21,14 @@ public class PlayerController : MonoBehaviour
         ApplyNoWallFrictionMaterial();
     }
 
+    public void ResetToStartPosition() {
+        if (rb == null) return;
+        Vector3 startPosition = settings.player.startPosition;
+        transform.SetPositionAndRotation(startPosition, Quaternion.identity);
+        rb.linearVelocity = Vector3.zero;
+        rb.angularVelocity = Vector3.zero;
+    }
+
     void FixedUpdate() {
         HandleMovement();
     }

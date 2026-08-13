@@ -14,7 +14,6 @@ public class LevelGenerator : MonoBehaviour
     [SerializeField] Animator playerAnimator;
     [SerializeField] GameSettings settings;
 
-    GameManager gameManager;
     Coroutine speedBuffCoroutine;
 
     List<GameObject> segments = new List<GameObject>();
@@ -42,7 +41,6 @@ public class LevelGenerator : MonoBehaviour
     void Start() {
         moveSpeed = settings.level.speedDefault;
         Physics.gravity = new Vector3(Physics.gravity.x, Physics.gravity.y, gravityZDefault);
-        gameManager = FindAnyObjectByType<GameManager>();
 
         // Có GameFlow thì để menu gọi EnterDemoMode / ResetForNewRun
         if (FindAnyObjectByType<GameFlowController>() == null) {
@@ -57,10 +55,10 @@ public class LevelGenerator : MonoBehaviour
 
         if (canCountDistance) {
             totalDistance += moveSpeed / 2.5f * Time.deltaTime;
-            gameManager.UpdateDistanceText(totalDistance);
+            GameEvents.RaiseDistanceChanged(totalDistance);
         }
 
-        gameManager.UpdateSpeedUpCountdownText(speedUpCountdown);
+        GameEvents.RaiseSpeedUpCountdownChanged(speedUpCountdown);
     }
 
     void RegisterSegmentPools() {

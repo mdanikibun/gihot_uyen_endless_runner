@@ -39,9 +39,23 @@ public class GameManager : MonoBehaviour
         EnsureGameOverButtons();
     }
 
+    void OnEnable() {
+        GameEvents.OnDistanceChanged += HandleDistanceChanged;
+        GameEvents.OnSpeedUpCountdownChanged += HandleSpeedUpCountdownChanged;
+        GameEvents.OnHealthChanged += HandleHealthChanged;
+        GameEvents.OnRunPrepared += HandleRunPrepared;
+    }
+
+    void OnDisable() {
+        GameEvents.OnDistanceChanged -= HandleDistanceChanged;
+        GameEvents.OnSpeedUpCountdownChanged -= HandleSpeedUpCountdownChanged;
+        GameEvents.OnHealthChanged -= HandleHealthChanged;
+        GameEvents.OnRunPrepared -= HandleRunPrepared;
+    }
+
     void Start() {
         Time.timeScale = 1f;
-        healthHearts.SetHealth(health, startingHealth);
+        GameEvents.RaiseHealthChanged(health, startingHealth);
         SetGameOverButtonsVisible(false);
     }
 
@@ -54,14 +68,14 @@ public class GameManager : MonoBehaviour
         Time.timeScale = 1f;
 
         playerController.enabled = true;
-        gameOverText.SetActive(false);
-        SetGameOverButtonsVisible(false);
-        healthHearts.SetHealth(health, startingHealth);
-        distanceText.text = "Distance: 0m";
-        speedUpCountdownText.SetActive(false);
+        playerController.ResetToStartPosition();
         ResetPlayerAnimatorToRun();
-
         scoreManager.ResetScore();
+
+        GameEvents.RaiseRunPrepared();
+        GameEvents.RaiseHealthChanged(health, startingHealth);
+        GameEvents.RaiseDistanceChanged(0f);
+        GameEvents.RaiseSpeedUpCountdownChanged(0f);
     }
 
     void ResetPlayerAnimatorToRun() {
@@ -78,29 +92,40 @@ public class GameManager : MonoBehaviour
 
     public void TakeDamage() {
         if (isGameOver) return;
-        
+
         health -= settings.gameplay.damageAmount;
-        healthHearts.SetHealth(health, startingHealth);
+        GameEvents.RaiseHealthChanged(health, startingHealth);
         if (health <= 0) {
             GameOver();
         }
     }
 
-    public void UpdateDistanceText(float distance) {
+    void HandleDistanceChanged(float distance) {
         if (isGameOver) return;
-        
+
         distanceValue = Mathf.Round(distance);
         distanceText.text = "Distance: " + distanceValue + "m";
     }
 
-    public void UpdateSpeedUpCountdownText(float countdown) {
+    void HandleSpeedUpCountdownChanged(float countdown) {
         if (isGameOver) return;
+
+        if (countdown <= 0f) {
+            speedUpCountdownText.SetActive(false);
+            return;
+        }
 
         speedUpCountdownText.SetActive(true);
         speedUpCountdownText.GetComponent<TMP_Text>().text = "Speed Up: " + countdown.ToString("F1") + "s";
-        if (countdown <= 0f) {
-            speedUpCountdownText.SetActive(false);
-        }
+    }
+
+    void HandleHealthChanged(int currentHealth, int maxHealth) {
+        healthHearts.SetHealth(currentHealth, maxHealth);
+    }
+
+    void HandleRunPrepared() {
+        gameOverText.SetActive(false);
+        SetGameOverButtonsVisible(false);
     }
 
     void GameOver() {
@@ -110,6 +135,7 @@ public class GameManager : MonoBehaviour
         scoreManager.AddLeaderboardEntry(gameFlow.PlayerName, distanceValue, scoreManager.Score);
 
         playerController.enabled = false;
+        GameEvents.RaiseGameOver();
         StartCoroutine(HandleBeforeGameOver());
     }
 

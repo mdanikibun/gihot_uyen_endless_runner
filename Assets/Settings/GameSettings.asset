@@ -42,6 +42,7 @@ MonoBehaviour:
     coinPoolSize: 100
     powerUpPoolSize: 15
   player:
+    startPosition: {x: 0, y: 1.2, z: 0}
     speedMoveLeftRight: 5
     jumpForce: 4
     groundCheckDistance: 0.1

@@ -35,23 +35,34 @@ public class ScoreManager : MonoBehaviour
 
     void Awake() {
         Load();
-        UpdateScoreText();
+    }
+
+    void OnEnable() {
+        GameEvents.OnScoreChanged += HandleScoreChanged;
+    }
+
+    void OnDisable() {
+        GameEvents.OnScoreChanged -= HandleScoreChanged;
+    }
+
+    void Start() {
+        GameEvents.RaiseScoreChanged(score);
     }
 
     public void AddScore(int amount) {
         if (gameManager.IsGameOver) return;
 
         score += amount;
-        UpdateScoreText();
+        GameEvents.RaiseScoreChanged(score);
     }
 
     public void ResetScore() {
         score = 0;
-        UpdateScoreText();
+        GameEvents.RaiseScoreChanged(score);
     }
 
-    void UpdateScoreText() {
-        scoreText.text = score.ToString();
+    void HandleScoreChanged(int newScore) {
+        scoreText.text = newScore.ToString();
     }
 
     public void AddLeaderboardEntry(string playerName, float distance, int entryScore) {
@@ -87,6 +98,7 @@ public class ScoreManager : MonoBehaviour
 
         ParseJson(File.ReadAllText(FilePath));
     }
+
     void ParseJson(string json) {
         if (string.IsNullOrWhiteSpace(json)) {
             saveData = new LeaderboardSaveData();

@@ -82,6 +82,7 @@ public class SegmentSettings
 [Serializable]
 public class PlayerSettings
 {
+    public Vector3 startPosition = new Vector3(0f, 1.2f, 0f);
     public float speedMoveLeftRight = 10f;
     public float jumpForce = 4f;
     public float groundCheckDistance = 0.1f;
