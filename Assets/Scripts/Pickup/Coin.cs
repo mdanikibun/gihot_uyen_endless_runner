@@ -10,5 +10,6 @@ public class Coin : Pickup
 
     protected override void OnPickup() {
         scoreManager.AddScore(settings.coin.scoreAmount);
+        GameEvents.RaiseCoinCollectedSFX();
     }
 }

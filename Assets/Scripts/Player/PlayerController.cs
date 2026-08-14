@@ -65,6 +65,7 @@ public class PlayerController : MonoBehaviour
         Vector3 velocity = rb.linearVelocity;
         velocity.y = settings.player.jumpForce;
         rb.linearVelocity = velocity;
+        GameEvents.RaisePlayerJumpSFX();
     }
 
     bool IsHitPlaying() {

@@ -63,6 +63,7 @@ public class GameFlowController : MonoBehaviour
 
         currentState = GameFlowState.Playing;
         Time.timeScale = 1f;
+        GameEvents.RaiseMusicGameplay();
     }
 
     public void RestartRun() {
@@ -76,6 +77,7 @@ public class GameFlowController : MonoBehaviour
 
         currentState = GameFlowState.Playing;
         Time.timeScale = 1f;
+        GameEvents.RaiseMusicGameplay();
     }
 
     void ClearObstaclesForNewRun() {
@@ -91,6 +93,7 @@ public class GameFlowController : MonoBehaviour
 
         currentState = GameFlowState.Paused;
         Time.timeScale = 0f;
+        GameEvents.RaiseMusicRelaxed();
     }
 
     public void ResumeGame() {
@@ -100,6 +103,7 @@ public class GameFlowController : MonoBehaviour
         SetMenusVisible(false);
         currentState = GameFlowState.Playing;
         Time.timeScale = 1f;
+        GameEvents.RaiseMusicGameplay();
     }
 
     public void BackToMainMenu() {
@@ -165,6 +169,7 @@ public class GameFlowController : MonoBehaviour
 
         currentState = GameFlowState.MainMenu;
         Time.timeScale = 1f;
+        GameEvents.RaiseMusicReset();
     }
 
     void HandlePauseInput() {

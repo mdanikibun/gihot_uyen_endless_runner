@@ -33,6 +33,8 @@ public class PlayerCollisionHandler : MonoBehaviour
                 cooldownTimer = 0f;
                 levelGenerator.ChangeSegmentMoveSpeed(settings.playerCollision.speedChangeAmount);
                 gameManager.TakeDamage();
+                GameEvents.RaisePlayerHitSFX();
+                return;
             }
         }
     }

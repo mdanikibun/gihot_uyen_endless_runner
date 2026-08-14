@@ -72,3 +72,13 @@ MonoBehaviour:
   leaderboard:
     maxEntries: 20
     fileName: leaderboard.json
+  music:
+    menuVolume: 0.5
+    gameplayVolume: 1
+    fadeDuration: 0.35
+  sfx:
+    hitVolume: 1
+    jumpVolume: 1
+    dieVolume: 1
+    coinVolume: 1
+    powerUpVolume: 1

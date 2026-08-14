@@ -153,6 +153,7 @@ public class LevelGenerator : MonoBehaviour
 
         ApplySpeedChange(speedAmount);
         speedUpCountdown = settings.level.buffDuration;
+        GameEvents.RaisePowerUpStartedSFX();
     }
 
     void StartStumble(float speedAmount) {
@@ -203,6 +204,8 @@ public class LevelGenerator : MonoBehaviour
     }
 
     void ClearAllSpeedEffects() {
+        bool hadSpeedUp = activeSpeedAmount > 0f;
+
         if (speedBuffCoroutine != null) {
             StopCoroutine(speedBuffCoroutine);
             speedBuffCoroutine = null;
@@ -215,6 +218,10 @@ public class LevelGenerator : MonoBehaviour
 
         if (cameraController != null) {
             cameraController.ResetToDefault();
+        }
+
+        if (hadSpeedUp) {
+            GameEvents.RaisePowerUpEndedSFX();
         }
     }
 

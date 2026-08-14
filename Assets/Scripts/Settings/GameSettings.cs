@@ -39,6 +39,12 @@ public class GameSettings : ScriptableObject
 
     [Header("Leaderboard")]
     public LeaderboardSettings leaderboard = new LeaderboardSettings();
+
+    [Header("Music")]
+    public MusicSettings music = new MusicSettings();
+
+    [Header("SFX")]
+    public SfxSettings sfx = new SfxSettings();
 }
 
 [Serializable]
@@ -144,4 +150,22 @@ public class LeaderboardSettings
 {
     public int maxEntries = 20;
     public string fileName = "leaderboard.json";
+}
+
+[Serializable]
+public class MusicSettings
+{
+    [Range(0f, 1f)] public float menuVolume = 0.75f;
+    [Range(0f, 1f)] public float gameplayVolume = 1f;
+    public float fadeDuration = 0.35f;
+}
+
+[Serializable]
+public class SfxSettings
+{
+    [Range(0f, 1f)] public float hitVolume = 1f;
+    [Range(0f, 1f)] public float jumpVolume = 1f;
+    [Range(0f, 1f)] public float dieVolume = 1f;
+    [Range(0f, 1f)] public float coinVolume = 1f;
+    [Range(0f, 1f)] public float powerUpVolume = 1f;
 }
