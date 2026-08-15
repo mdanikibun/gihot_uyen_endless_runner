@@ -353,7 +353,7 @@ public class CharacterSelectUI : MonoBehaviour
     }
 
     void ExcludePreviewLayerFromSceneCameras() {
-        Camera[] cameras = FindObjectsByType<Camera>(FindObjectsInactive.Include, FindObjectsSortMode.None);
+        Camera[] cameras = FindObjectsByType<Camera>(FindObjectsInactive.Include);
         int excludeMask = ~(1 << previewLayer);
         for (int i = 0; i < cameras.Length; i++) {
             cameras[i].cullingMask &= excludeMask;

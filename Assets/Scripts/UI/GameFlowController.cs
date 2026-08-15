@@ -35,6 +35,12 @@ public class GameFlowController : MonoBehaviour
     public string PlayerName => playerName;
     public int SelectedCharacterIndex => selectedCharacterIndex;
 
+    public PlayerController ActivePlayerController {
+        get {
+            return player != null ? player.GetComponent<PlayerController>() : null;
+        }
+    }
+
     void Awake() {
         scenePlayer = player;
     }

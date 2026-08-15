@@ -40,6 +40,10 @@ public class PlayerController : MonoBehaviour
         movement = context.ReadValue<Vector2>();
     }
 
+    public void SetMoveX(float moveX) {
+        movement = new Vector2(moveX, 0f);
+    }
+
     void HandleMovement() {
         float moveX = movement.x * settings.player.speedMoveLeftRight;
         float moveZ = movement.y * settings.player.speedMoveLeftRight;
@@ -60,6 +64,10 @@ public class PlayerController : MonoBehaviour
 
     public void Jump(InputAction.CallbackContext context) {
         if (!context.started) return;
+        TryJump();
+    }
+
+    public void TryJump() {
         if (!IsGrounded()) return;
         if (IsHitPlaying()) return;
 

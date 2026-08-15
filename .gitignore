@@ -89,3 +89,6 @@ MonoBleedingEdge/
 # TextMesh Pro
 Assets/TextMesh Pro/
 Assets/TextMesh Pro.meta
+
+# Unity temporary files
+.utmp/

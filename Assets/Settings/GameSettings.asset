@@ -15,7 +15,7 @@ MonoBehaviour:
   gameplay:
     startingHealth: 5
     damageAmount: 1
-    gameOverSlowMoDuration: 7
+    gameOverSlowMoDuration: 3
   level:
     segmentCount: 15
     segmentGateInterval: 5
