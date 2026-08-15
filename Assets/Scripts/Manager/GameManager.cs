@@ -33,6 +33,11 @@ public class GameManager : MonoBehaviour
     public bool IsGameOver => isGameOver;
     public float DistanceValue => distanceValue;
 
+    public void BindPlayer(PlayerController controller, Animator animator) {
+        playerController = controller;
+        playerAnimator = animator;
+    }
+
     void Awake() {
         startingHealth = settings.gameplay.startingHealth;
         health = startingHealth;
@@ -67,8 +72,10 @@ public class GameManager : MonoBehaviour
         distanceValue = 0f;
         Time.timeScale = 1f;
 
-        playerController.enabled = true;
-        playerController.ResetToStartPosition();
+        if (playerController != null) {
+            playerController.enabled = true;
+            playerController.ResetToStartPosition();
+        }
         ResetPlayerAnimatorToRun();
         scoreManager.ResetScore();
 
@@ -134,7 +141,9 @@ public class GameManager : MonoBehaviour
 
         scoreManager.AddLeaderboardEntry(gameFlow.PlayerName, distanceValue, scoreManager.Score);
 
-        playerController.enabled = false;
+        if (playerController != null) {
+            playerController.enabled = false;
+        }
         GameEvents.RaiseGameOver();
         StartCoroutine(HandleBeforeGameOver());
     }

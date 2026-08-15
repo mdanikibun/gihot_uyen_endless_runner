@@ -34,6 +34,10 @@ public class LevelGenerator : MonoBehaviour
     public bool IsPlaying => isPlaying;
     public float TotalDistance => totalDistance;
 
+    public void BindPlayerAnimator(Animator animator) {
+        playerAnimator = animator;
+    }
+
     void Awake() {
         RegisterSegmentPools();
     }

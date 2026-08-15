@@ -18,6 +18,9 @@ public class PlayerController : MonoBehaviour
     void Awake() {
         rb = GetComponent<Rigidbody>();
         playerColliders = GetComponentsInChildren<Collider>();
+        if (animator == null) {
+            animator = GetComponentInChildren<Animator>();
+        }
         ApplyNoWallFrictionMaterial();
     }
 

@@ -14,6 +14,12 @@ public class PlayerCollisionHandler : MonoBehaviour
     LevelGenerator levelGenerator;
     GameManager gameManager;
 
+    void Awake() {
+        if (animator == null) {
+            animator = GetComponentInChildren<Animator>();
+        }
+    }
+
     void Start() {
         levelGenerator = FindAnyObjectByType<LevelGenerator>();
         gameManager = FindAnyObjectByType<GameManager>();

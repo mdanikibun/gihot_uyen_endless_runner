@@ -69,6 +69,8 @@ MonoBehaviour:
   characterSelect:
     normalSlotColor: {r: 1, g: 1, b: 1, a: 1}
     selectedSlotColor: {r: 1, g: 0.85, b: 0.2, a: 1}
+    previewRotateSpeed: 90
+    previewFitPadding: 1.2
   leaderboard:
     maxEntries: 20
     fileName: leaderboard.json

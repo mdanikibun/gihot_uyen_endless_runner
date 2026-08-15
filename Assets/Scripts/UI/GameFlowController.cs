@@ -25,12 +25,19 @@ public class GameFlowController : MonoBehaviour
     string playerName = "Player";
     int selectedCharacterIndex = -1;
     CharacterOption selectedCharacter;
+    GameObject scenePlayer;
+    GameObject runtimePlayer;
+    int runtimeCharacterIndex = -1;
     bool leaderboardOpenedFromPause;
     bool leaderboardOpenedWhileMenusHidden;
 
     public GameFlowState CurrentState => currentState;
     public string PlayerName => playerName;
     public int SelectedCharacterIndex => selectedCharacterIndex;
+
+    void Awake() {
+        scenePlayer = player;
+    }
 
     void Start() {
         EnterMainMenu();
@@ -53,6 +60,7 @@ public class GameFlowController : MonoBehaviour
     }
 
     public void StartRun() {
+        ApplySelectedPlayer();
         HideLeaderboard();
         SetMenusVisible(false);
         SetGameplayVisible(true);
@@ -67,6 +75,7 @@ public class GameFlowController : MonoBehaviour
     }
 
     public void RestartRun() {
+        ApplySelectedPlayer();
         HideLeaderboard();
         SetMenusVisible(false);
         SetGameplayVisible(true);
@@ -159,6 +168,54 @@ public class GameFlowController : MonoBehaviour
         selectedCharacter = option;
     }
 
+    void ApplySelectedPlayer() {
+        GameObject prefab = selectedCharacter != null ? selectedCharacter.playerPrefab : null;
+        if (prefab == null) return;
+
+        if (runtimePlayer != null && runtimeCharacterIndex == selectedCharacterIndex) {
+            player = runtimePlayer;
+            BindPlayer(runtimePlayer);
+            return;
+        }
+
+        if (runtimePlayer != null) {
+            Destroy(runtimePlayer);
+            runtimePlayer = null;
+        }
+
+        if (scenePlayer != null) {
+            scenePlayer.SetActive(false);
+        }
+
+        runtimePlayer = Instantiate(prefab);
+        runtimePlayer.name = prefab.name;
+        runtimePlayer.SetActive(false);
+        runtimeCharacterIndex = selectedCharacterIndex;
+        CopyScenePlayerLight(runtimePlayer);
+        BindPlayer(runtimePlayer);
+        player = runtimePlayer;
+    }
+
+    void BindPlayer(GameObject playerInstance) {
+        PlayerController controller = playerInstance.GetComponent<PlayerController>();
+        Animator animator = playerInstance.GetComponentInChildren<Animator>();
+        gameManager.BindPlayer(controller, animator);
+        levelGenerator.BindPlayerAnimator(animator);
+    }
+
+    void CopyScenePlayerLight(GameObject playerInstance) {
+        if (playerInstance.GetComponentInChildren<Light>(true) != null) return;
+        if (scenePlayer == null) return;
+
+        Light sceneLight = scenePlayer.GetComponentInChildren<Light>(true);
+        if (sceneLight == null) return;
+
+        GameObject lightClone = Instantiate(sceneLight.gameObject, playerInstance.transform);
+        lightClone.name = sceneLight.gameObject.name;
+        lightClone.transform.localPosition = sceneLight.transform.localPosition;
+        lightClone.transform.localRotation = sceneLight.transform.localRotation;
+    }
+
     void EnterMainMenu() {
         SetGameplayVisible(false);
         SetMenusVisible(true);
@@ -209,6 +266,8 @@ public class GameFlowController : MonoBehaviour
 
     void SetGameplayVisible(bool visible) {
         canvasHud.SetActive(visible);
-        player.SetActive(visible);
+        if (player != null) {
+            player.SetActive(visible);
+        }
     }
 }

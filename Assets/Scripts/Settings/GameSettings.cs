@@ -143,6 +143,8 @@ public class CharacterSelectSettings
 {
     public Color normalSlotColor = Color.white;
     public Color selectedSlotColor = new Color(1f, 0.85f, 0.2f, 1f);
+    public float previewRotateSpeed = 90f;
+    public float previewFitPadding = 1.2f;
 }
 
 [Serializable]
