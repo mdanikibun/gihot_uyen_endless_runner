@@ -9,11 +9,13 @@ public class Segment : MonoBehaviour
     [SerializeField] GameObject coinPrefab;
     [SerializeField] GameSettings settings;
 
-    List<int> availableLanes = new List<int>();
-    readonly List<GameObject> spawnedObjects = new List<GameObject>();
+    readonly List<int> availableLanes = new List<int>(4);
+    readonly List<PooledObject> spawnedObjects = new List<PooledObject>(16);
+    PoolManager poolManager;
     bool shouldSpawnItems = true;
 
     void Awake() {
+        poolManager = PoolManager.Instance;
         RegisterItemPools();
     }
 
@@ -31,6 +33,27 @@ public class Segment : MonoBehaviour
 
     public void Setup() {
         ClearSpawnedContent();
+        SpawnItemsIfNeeded();
+    }
+
+    public void RepositionAndRespawn(Vector3 worldPosition) {
+        ClearSpawnedContent();
+        transform.SetPositionAndRotation(worldPosition, Quaternion.identity);
+        shouldSpawnItems = true;
+        SpawnItemsIfNeeded();
+    }
+
+    void RegisterItemPools() {
+        if (poolManager == null) {
+            poolManager = PoolManager.Instance;
+        }
+
+        poolManager.EnsurePool(fencePrefab, settings.segment.fencePoolSize);
+        poolManager.EnsurePool(coinPrefab, settings.segment.coinPoolSize);
+        poolManager.EnsurePool(powerUpItemPrefab, settings.segment.powerUpPoolSize);
+    }
+
+    void SpawnItemsIfNeeded() {
         if (!shouldSpawnItems) return;
 
         ResetAvailableLanes();
@@ -39,19 +62,9 @@ public class Segment : MonoBehaviour
         SpawnCoins();
     }
 
-    void RegisterItemPools() {
-        PoolManager poolManager = PoolManager.Instance;
-        poolManager.EnsurePool(fencePrefab, settings.segment.fencePoolSize);
-        poolManager.EnsurePool(coinPrefab, settings.segment.coinPoolSize);
-        poolManager.EnsurePool(powerUpItemPrefab, settings.segment.powerUpPoolSize);
-    }
-
     void ClearSpawnedContent() {
         for (int i = 0; i < spawnedObjects.Count; i++) {
-            GameObject spawned = spawnedObjects[i];
-            if (spawned == null) continue;
-
-            PooledObject pooled = spawned.GetComponent<PooledObject>();
+            PooledObject pooled = spawnedObjects[i];
             if (pooled != null) {
                 pooled.ReturnToPool();
             }
@@ -70,13 +83,14 @@ public class Segment : MonoBehaviour
     void SpawnFences() {
         float[] lanes = settings.segment.lanes;
         int fencesToSpawn = Random.Range(0, lanes.Length);
+        float y = transform.position.y;
+        float z = transform.position.z;
 
         for (int i = 0; i < fencesToSpawn; i++) {
             if (availableLanes.Count <= 0) break;
 
             int selectedLane = SelectLane();
-            Vector3 spawnPosition = new Vector3(lanes[selectedLane], transform.position.y, transform.position.z);
-            SpawnChild(fencePrefab, spawnPosition);
+            SpawnChild(fencePrefab, new Vector3(lanes[selectedLane], y, z));
         }
     }
 
@@ -94,6 +108,8 @@ public class Segment : MonoBehaviour
 
         float[] lanes = settings.segment.lanes;
         int selectedLane = SelectLane();
+        float laneX = lanes[selectedLane] - .25f;
+        float y = transform.position.y;
 
         int maxCoinsToSpawn = 6;
         int coinToSpawn = Random.Range(1, maxCoinsToSpawn);
@@ -101,27 +117,32 @@ public class Segment : MonoBehaviour
 
         for (int i = 0; i < coinToSpawn; i++) {
             float spawnZPosition = topOfSegmentZPosition - settings.segment.coinSpacing * i;
-            Vector3 spawnPosition = new Vector3(lanes[selectedLane] - .25f, transform.position.y, spawnZPosition);
-            SpawnChild(coinPrefab, spawnPosition);
+            SpawnChild(coinPrefab, new Vector3(laneX, y, spawnZPosition));
         }
     }
 
     void SpawnChild(GameObject prefab, Vector3 worldPosition) {
         if (prefab == null) return;
+        if (poolManager == null) {
+            poolManager = PoolManager.Instance;
+        }
 
-        GameObject instance = PoolManager.Instance.GetInactive(prefab);
-        instance.transform.SetParent(transform, false);
-        instance.transform.position = worldPosition;
-        instance.transform.rotation = Quaternion.identity;
+        GameObject instance = poolManager.GetInactive(prefab);
+        Transform instanceTransform = instance.transform;
+        instanceTransform.SetParent(transform, false);
+        instanceTransform.SetPositionAndRotation(worldPosition, Quaternion.identity);
         instance.SetActive(true);
-        spawnedObjects.Add(instance);
+
+        PooledObject pooled = instance.GetComponent<PooledObject>();
+        if (pooled != null) {
+            spawnedObjects.Add(pooled);
+        }
     }
 
     int SelectLane() {
         int randomLaneIndex = Random.Range(0, availableLanes.Count);
         int selectedLane = availableLanes[randomLaneIndex];
         availableLanes.RemoveAt(randomLaneIndex);
-
         return selectedLane;
     }
 }
