@@ -1,0 +1,203 @@
+ManifestFileVersion: 0
+UnityVersion: 6000.5.6f1
+CRC: 39266696
+Hashes:
+  AssetFileHash:
+    serializedVersion: 2
+    Hash: 85b1fc4c623fa61f202234c3d3d72bcc
+  TypeTreeHash:
+    serializedVersion: 2
+    Hash: b07e798d2aff478abb28113bb09ffa01
+  IncrementalBuildHash:
+    serializedVersion: 2
+    Hash: c936bbe1f197f74b237e11109b1929de
+HashAppended: 0
+ClassTypes:
+- Class: 1
+  Script: {instanceID: 0}
+- Class: 4
+  Script: {instanceID: 0}
+- Class: 21
+  Script: {instanceID: 0}
+- Class: 23
+  Script: {instanceID: 0}
+- Class: 28
+  Script: {instanceID: 0}
+- Class: 33
+  Script: {instanceID: 0}
+- Class: 43
+  Script: {instanceID: 0}
+- Class: 48
+  Script: {instanceID: 0}
+- Class: 54
+  Script: {instanceID: 0}
+- Class: 65
+  Script: {instanceID: 0}
+- Class: 74
+  Script: {instanceID: 0}
+- Class: 90
+  Script: {instanceID: 0}
+- Class: 91
+  Script: {instanceID: 0}
+- Class: 95
+  Script: {instanceID: 0}
+- Class: 108
+  Script: {instanceID: 0}
+- Class: 114
+  Script: {fileID: 11500000, guid: 1bf45e19a23b996438d1cf7d1f086ff4, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: c8e1a2b3d4f5467890abcdef00000001, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: 25dc36aaa12bf8546b92fb484ec6d291, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: 504c01754850fdb4abfa1d5aaaf890f0, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: b5fa3a47942f3fb41a55d64a71a38be9, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: 8771ba605b3f9eb4ea4a9166e3bf9387, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: 71c1514a6bd24e1e882cebbe1904ce04, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: 39fa3d8997a24136984ca6e2c99902bc, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: 62899f850307741f2a39c98a8b639597, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: 474bcb49853aa07438625e644c072ee6, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: 0cd44c1031e13a943bb63640046fad76, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: dc42784cf147c0c48a680349fa168899, type: 3}
+- Class: 115
+  Script: {instanceID: 0}
+- Class: 128
+  Script: {instanceID: 0}
+- Class: 134
+  Script: {instanceID: 0}
+- Class: 135
+  Script: {instanceID: 0}
+- Class: 136
+  Script: {instanceID: 0}
+- Class: 137
+  Script: {instanceID: 0}
+- Class: 222
+  Script: {instanceID: 0}
+- Class: 223
+  Script: {instanceID: 0}
+- Class: 224
+  Script: {instanceID: 0}
+SerializeReferenceClassIdentifiers:
+- AssemblyName: Assembly-CSharp
+  ClassName: CameraSettings
+- AssemblyName: Assembly-CSharp
+  ClassName: CharacterSelectSettings
+- AssemblyName: Assembly-CSharp
+  ClassName: CoinSettings
+- AssemblyName: Assembly-CSharp
+  ClassName: GameplaySettings
+- AssemblyName: Assembly-CSharp
+  ClassName: LeaderboardSettings
+- AssemblyName: Assembly-CSharp
+  ClassName: LevelSettings
+- AssemblyName: Assembly-CSharp
+  ClassName: MusicSettings
+- AssemblyName: Assembly-CSharp
+  ClassName: ObstacleSpawnSettings
+- AssemblyName: Assembly-CSharp
+  ClassName: PickupSettings
+- AssemblyName: Assembly-CSharp
+  ClassName: PlayerCollisionSettings
+- AssemblyName: Assembly-CSharp
+  ClassName: PlayerSettings
+- AssemblyName: Assembly-CSharp
+  ClassName: PowerUpSettings
+- AssemblyName: Assembly-CSharp
+  ClassName: SegmentSettings
+- AssemblyName: Assembly-CSharp
+  ClassName: SfxSettings
+- AssemblyName: Unity.InputSystem
+  ClassName: UnityEngine.InputSystem.InputAction
+- AssemblyName: Unity.InputSystem
+  ClassName: UnityEngine.InputSystem.InputActionMap
+- AssemblyName: Unity.InputSystem
+  ClassName: UnityEngine.InputSystem.InputBinding
+- AssemblyName: Unity.InputSystem
+  ClassName: UnityEngine.InputSystem.PlayerInput/ActionEvent
+- AssemblyName: Unity.InputSystem
+  ClassName: UnityEngine.InputSystem.PlayerInput/ControlsChangedEvent
+- AssemblyName: Unity.InputSystem
+  ClassName: UnityEngine.InputSystem.PlayerInput/DeviceLostEvent
+- AssemblyName: Unity.InputSystem
+  ClassName: UnityEngine.InputSystem.PlayerInput/DeviceRegainedEvent
+- AssemblyName: Unity.TextMeshPro
+  ClassName: TMPro.FaceInfo_Legacy
+- AssemblyName: Unity.TextMeshPro
+  ClassName: TMPro.FontAssetCreationSettings
+- AssemblyName: Unity.TextMeshPro
+  ClassName: TMPro.KerningTable
+- AssemblyName: Unity.TextMeshPro
+  ClassName: TMPro.TMP_Character
+- AssemblyName: Unity.TextMeshPro
+  ClassName: TMPro.TMP_FontFeatureTable
+- AssemblyName: Unity.TextMeshPro
+  ClassName: TMPro.TMP_FontWeightPair
+- AssemblyName: Unity.TextMeshPro
+  ClassName: TMPro.VertexGradient
+- AssemblyName: UnityEngine.CoreModule
+  ClassName: UnityEngine.Color
+- AssemblyName: UnityEngine.CoreModule
+  ClassName: UnityEngine.Color32
+- AssemblyName: UnityEngine.CoreModule
+  ClassName: UnityEngine.Events.ArgumentCache
+- AssemblyName: UnityEngine.CoreModule
+  ClassName: UnityEngine.Events.PersistentCallGroup
+- AssemblyName: UnityEngine.CoreModule
+  ClassName: UnityEngine.Events.PersistentListenerMode
+- AssemblyName: UnityEngine.CoreModule
+  ClassName: UnityEngine.LayerMask
+- AssemblyName: UnityEngine.CoreModule
+  ClassName: UnityEngine.RenderingLayerMask
+- AssemblyName: UnityEngine.CoreModule
+  ClassName: UnityEngine.Vector2
+- AssemblyName: UnityEngine.CoreModule
+  ClassName: UnityEngine.Vector3
+- AssemblyName: UnityEngine.CoreModule
+  ClassName: UnityEngine.Vector4
+- AssemblyName: UnityEngine.TextCoreFontEngineModule
+  ClassName: UnityEngine.TextCore.FaceInfo
+- AssemblyName: UnityEngine.TextCoreFontEngineModule
+  ClassName: UnityEngine.TextCore.Glyph
+- AssemblyName: UnityEngine.TextCoreFontEngineModule
+  ClassName: UnityEngine.TextCore.GlyphMetrics
+- AssemblyName: UnityEngine.TextCoreFontEngineModule
+  ClassName: UnityEngine.TextCore.GlyphRect
+- AssemblyName: UnityEngine.TextCoreFontEngineModule
+  ClassName: UnityEngine.TextCore.LowLevel.GlyphAdjustmentRecord
+- AssemblyName: UnityEngine.TextCoreFontEngineModule
+  ClassName: UnityEngine.TextCore.LowLevel.GlyphPairAdjustmentRecord
+- AssemblyName: UnityEngine.TextCoreFontEngineModule
+  ClassName: UnityEngine.TextCore.LowLevel.GlyphValueRecord
+- AssemblyName: UnityEngine.UI
+  ClassName: UnityEngine.UI.MaskableGraphic/CullStateChangedEvent
+Assets:
+- Assets/Prefabs/Segments/Starting/Start Text Null.prefab
+- Assets/Prefabs/Pickups/Coin Pickup.prefab
+- Assets/Prefabs/Obstacles/Car.prefab
+- Assets/Prefabs/Segments/Starting/Start Text 1.prefab
+- Assets/Prefabs/Pickups/PowerUp Pickup.prefab
+- Assets/Prefabs/Segments/Gate.prefab
+- Assets/Prefabs/Obstacles/Wheel.prefab
+- Assets/Prefabs/Obstacles/Base Obstacle.prefab
+- Assets/Prefabs/Segments/Road 2.prefab
+- Assets/Prefabs/Segments/Road 1.prefab
+- Assets/Prefabs/Segments/Starting/Start Text 2.prefab
+- Assets/Prefabs/Players/Player 4.prefab
+- Assets/Prefabs/Obstacles/Rock.prefab
+- Assets/Prefabs/Players/Player.prefab
+- Assets/Prefabs/Players/Player 3.prefab
+- Assets/Prefabs/Segments/Starting/Start Text 3.prefab
+- Assets/Prefabs/Obstacles/Fence.prefab
+- Assets/Prefabs/Segments/Starting/Start Text Run.prefab
+- Assets/Prefabs/Players/Player 2.prefab
+Dependencies: []
