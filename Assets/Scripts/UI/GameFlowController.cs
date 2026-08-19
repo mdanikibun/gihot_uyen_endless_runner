@@ -6,6 +6,7 @@ public class GameFlowController : MonoBehaviour
 {
     [Header("Panels")]
     [SerializeField] GameObject panelLoading;
+    [SerializeField] RectTransform loadingLabel;
     [SerializeField] GameObject panelMainMenu;
     [SerializeField] GameObject panelCharacterSelect;
     [SerializeField] GameObject panelHowToPlay;
@@ -227,12 +228,34 @@ public class GameFlowController : MonoBehaviour
         lightClone.transform.localRotation = sceneLight.transform.localRotation;
     }
 
+    Coroutine loadingEffectCoroutine;
+
     void ShowLoading() {
         SetGameplayVisible(false);
         SetMenusVisible(true);
         ShowOnlyPanel(panelLoading);
         currentState = GameFlowState.Loading;
         Time.timeScale = 1f;
+        loadingEffectCoroutine = StartCoroutine(ScaleCoroutine(loadingLabel, 0.85f, 1f, 0.6f));
+    }
+
+    IEnumerator ScaleCoroutine(RectTransform target, float minScale, float maxScale, float duration) {
+        while (true) {
+            yield return LerpScale(target, maxScale, minScale, duration);
+            yield return LerpScale(target, minScale, maxScale, duration);
+        }
+    }
+
+    IEnumerator LerpScale(RectTransform target, float from, float to, float duration) {
+        float elapsed = 0f;
+        while (elapsed < duration) {
+            elapsed += Time.deltaTime;
+            float t = Mathf.SmoothStep(0f, 1f, elapsed / duration);
+            float s = Mathf.Lerp(from, to, t);
+            target.localScale = new Vector3(s, s, 1f);
+            yield return null;
+        }
+        target.localScale = new Vector3(to, to, 1f);
     }
 
     IEnumerator LoadAssetsThenEnterMenu() {
@@ -257,6 +280,7 @@ public class GameFlowController : MonoBehaviour
     }
 
     void EnterMainMenu() {
+        if (loadingEffectCoroutine != null) { StopCoroutine(loadingEffectCoroutine); loadingEffectCoroutine = null; }
         SetGameplayVisible(false);
         SetMenusVisible(true);
         ShowOnlyPanel(panelMainMenu);
