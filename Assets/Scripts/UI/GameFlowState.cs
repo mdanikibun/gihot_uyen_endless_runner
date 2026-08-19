@@ -1,5 +1,6 @@
 public enum GameFlowState
 {
+    Loading,
     MainMenu,
     CharacterSelect,
     HowToPlay,

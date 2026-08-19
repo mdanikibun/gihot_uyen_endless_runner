@@ -1,9 +1,11 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 public class GameFlowController : MonoBehaviour
 {
     [Header("Panels")]
+    [SerializeField] GameObject panelLoading;
     [SerializeField] GameObject panelMainMenu;
     [SerializeField] GameObject panelCharacterSelect;
     [SerializeField] GameObject panelHowToPlay;
@@ -18,9 +20,10 @@ public class GameFlowController : MonoBehaviour
     [SerializeField] GameManager gameManager;
     [SerializeField] CharacterSelectUI characterSelectUI;
     [SerializeField] ObstacleSpawner obstacleSpawner;
+    [SerializeField] GameAssetManager gameAssetManager;
 
     [Header("States")]
-    [SerializeField] GameFlowState currentState = GameFlowState.MainMenu;
+    [SerializeField] GameFlowState currentState = GameFlowState.Loading;
 
     string playerName = "Player";
     int selectedCharacterIndex = -1;
@@ -46,7 +49,8 @@ public class GameFlowController : MonoBehaviour
     }
 
     void Start() {
-        EnterMainMenu();
+        ShowLoading();
+        StartCoroutine(LoadAssetsThenEnterMenu());
     }
 
     void Update() {
@@ -132,6 +136,7 @@ public class GameFlowController : MonoBehaviour
 
         if (leaderboardOpenedWhileMenusHidden) {
             SetMenusVisible(true);
+            SetPanelActive(panelLoading, false);
             SetPanelActive(panelMainMenu, false);
             SetPanelActive(panelCharacterSelect, false);
             SetPanelActive(panelHowToPlay, false);
@@ -222,6 +227,35 @@ public class GameFlowController : MonoBehaviour
         lightClone.transform.localRotation = sceneLight.transform.localRotation;
     }
 
+    void ShowLoading() {
+        SetGameplayVisible(false);
+        SetMenusVisible(true);
+        ShowOnlyPanel(panelLoading);
+        currentState = GameFlowState.Loading;
+        Time.timeScale = 1f;
+    }
+
+    IEnumerator LoadAssetsThenEnterMenu() {
+        GameAssetManager assets = gameAssetManager;
+
+        bool failed = false;
+        yield return assets.LoadAsync(
+            null,
+            error => {
+                failed = true;
+                Debug.LogWarning(error);
+            }
+        );
+
+        if (failed) {
+            Debug.LogWarning("AssetBundle load failed. Entering Main Menu with Inspector prefabs.");
+        }
+
+        yield return new WaitForSeconds(3f);
+
+        EnterMainMenu();
+    }
+
     void EnterMainMenu() {
         SetGameplayVisible(false);
         SetMenusVisible(true);
@@ -252,6 +286,7 @@ public class GameFlowController : MonoBehaviour
     }
 
     void ShowOnlyPanel(GameObject panelToShow) {
+        SetPanelActive(panelLoading, panelToShow == panelLoading);
         SetPanelActive(panelMainMenu, panelToShow == panelMainMenu);
         SetPanelActive(panelCharacterSelect, panelToShow == panelCharacterSelect);
         SetPanelActive(panelHowToPlay, panelToShow == panelHowToPlay);
