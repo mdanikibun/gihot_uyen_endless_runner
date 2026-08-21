@@ -8,33 +8,6 @@ public class GameAssetManager : MonoBehaviour
 {
     public static GameAssetManager Instance { get; private set; }
 
-    public static class PrefabNames
-    {
-        public const string Player = "Player";
-        public const string Player2 = "Player 2";
-        public const string Player3 = "Player 3";
-        public const string Player4 = "Player 4";
-
-        public const string Rock = "Rock";
-        public const string Wheel = "Wheel";
-        public const string Car = "Car";
-        public const string BaseObstacle = "Base Obstacle";
-        public const string Fence = "Fence";
-
-        public const string CoinPickup = "Coin Pickup";
-        public const string PowerUpPickup = "PowerUp Pickup";
-
-        public const string Road1 = "Road 1";
-        public const string Road2 = "Road 2";
-        public const string Gate = "Gate";
-
-        public const string StartText1 = "Start Text 1";
-        public const string StartText2 = "Start Text 2";
-        public const string StartText3 = "Start Text 3";
-        public const string StartTextRun = "Start Text Run";
-        public const string StartTextNull = "Start Text Null";
-    }
-
     const string BundleFolder = "AssetBundles";
     const string BundleFileName = "prefabs";
 
@@ -64,10 +37,14 @@ public class GameAssetManager : MonoBehaviour
         return prefabs[prefabName];
     }
 
-    public GameObject[] GetPrefabs(params string[] prefabNames) {
-        GameObject[] results = new GameObject[prefabNames.Length];
-        for (int i = 0; i < prefabNames.Length; i++) {
-            results[i] = GetPrefab(prefabNames[i]);
+    public GameObject Resolve(GameObject catalogEntry) {
+        return GetPrefab(catalogEntry.name);
+    }
+
+    public GameObject[] ResolveMany(GameObject[] catalogEntries) {
+        GameObject[] results = new GameObject[catalogEntries.Length];
+        for (int i = 0; i < catalogEntries.Length; i++) {
+            results[i] = Resolve(catalogEntries[i]);
         }
 
         return results;

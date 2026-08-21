@@ -16,16 +16,17 @@ public class GameFlowController : MonoBehaviour
     [Header("Gameplay")]
     [SerializeField] GameObject canvasMenus;
     [SerializeField] GameObject canvasHud;
-    [SerializeField] GameObject player;
     [SerializeField] LevelGenerator levelGenerator;
     [SerializeField] GameManager gameManager;
     [SerializeField] CharacterSelectUI characterSelectUI;
     [SerializeField] ObstacleSpawner obstacleSpawner;
     [SerializeField] GameAssetManager gameAssetManager;
+    [SerializeField] PrefabBundleCatalog prefabCatalog;
 
     [Header("States")]
     [SerializeField] GameFlowState currentState = GameFlowState.Loading;
 
+    GameObject player;
     string playerName = "Player";
     int selectedCharacterIndex = -1;
     GameObject runtimePlayer;
@@ -268,40 +269,21 @@ public class GameFlowController : MonoBehaviour
 
     void ApplyGameplayPrefabs(GameAssetManager assets) {
         levelGenerator.ApplyPrefabs(
-            assets.GetPrefabs(
-                GameAssetManager.PrefabNames.StartText1,
-                GameAssetManager.PrefabNames.StartText2,
-                GameAssetManager.PrefabNames.StartText3,
-                GameAssetManager.PrefabNames.StartTextRun,
-                GameAssetManager.PrefabNames.StartTextNull
-            ),
-            assets.GetPrefabs(
-                GameAssetManager.PrefabNames.Road1,
-                GameAssetManager.PrefabNames.Road2
-            ),
-            assets.GetPrefab(GameAssetManager.PrefabNames.Gate)
+            assets.ResolveMany(prefabCatalog.startingSegments),
+            assets.ResolveMany(prefabCatalog.roadSegments),
+            assets.Resolve(prefabCatalog.gate)
         );
 
-        obstacleSpawner.ApplyPrefabs(assets.GetPrefabs(
-            GameAssetManager.PrefabNames.Rock,
-            GameAssetManager.PrefabNames.Wheel,
-            GameAssetManager.PrefabNames.Car,
-            GameAssetManager.PrefabNames.BaseObstacle
-        ));
+        obstacleSpawner.ApplyPrefabs(assets.ResolveMany(prefabCatalog.obstacles));
 
         Segment.ApplyItemPrefabs(
-            assets.GetPrefab(GameAssetManager.PrefabNames.Fence),
-            assets.GetPrefab(GameAssetManager.PrefabNames.CoinPickup),
-            assets.GetPrefab(GameAssetManager.PrefabNames.PowerUpPickup),
+            assets.Resolve(prefabCatalog.fence),
+            assets.Resolve(prefabCatalog.coin),
+            assets.Resolve(prefabCatalog.powerUp),
             levelGenerator.Settings
         );
 
-        characterSelectUI.ApplyPrefabs(assets.GetPrefabs(
-            GameAssetManager.PrefabNames.Player,
-            GameAssetManager.PrefabNames.Player2,
-            GameAssetManager.PrefabNames.Player3,
-            GameAssetManager.PrefabNames.Player4
-        ));
+        characterSelectUI.ApplyPrefabs(assets.ResolveMany(prefabCatalog.players));
         characterSelectUI.PrewarmPreviews(this);
     }
 
