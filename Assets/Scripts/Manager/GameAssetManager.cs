@@ -39,10 +39,9 @@ public class GameAssetManager : MonoBehaviour
     const string BundleFileName = "prefabs";
 
     AssetBundle loadedBundle;
-    readonly Dictionary<string, GameObject> prefabs = new Dictionary<string, GameObject>();
+    readonly Dictionary<string, GameObject> prefabs = new Dictionary<string, GameObject>(StringComparer.OrdinalIgnoreCase);
 
     public bool IsLoaded => prefabs.Count > 0;
-    public int PrefabCount => prefabs.Count;
 
     void Awake() {
         if (Instance != null && Instance != this) {
@@ -62,49 +61,16 @@ public class GameAssetManager : MonoBehaviour
     }
 
     public GameObject GetPrefab(string prefabName) {
-        if (string.IsNullOrEmpty(prefabName)) {
-            return null;
-        }
-
-        prefabs.TryGetValue(prefabName, out GameObject result);
-
-        return result;
-    }
-
-    public bool TryGetPrefab(string prefabName, out GameObject prefab) {
-        prefab = GetPrefab(prefabName);
-        return prefab != null;
+        return prefabs[prefabName];
     }
 
     public GameObject[] GetPrefabs(params string[] prefabNames) {
-        if (prefabNames == null || prefabNames.Length == 0) {
-            return Array.Empty<GameObject>();
-        }
-
         GameObject[] results = new GameObject[prefabNames.Length];
         for (int i = 0; i < prefabNames.Length; i++) {
             results[i] = GetPrefab(prefabNames[i]);
-            if (results[i] == null) {
-                Debug.LogWarning("GameAssetManager: prefab not found: " + prefabNames[i]);
-            }
         }
 
         return results;
-    }
-
-    public bool TryGetPrefabs(out GameObject[] results, params string[] prefabNames) {
-        results = GetPrefabs(prefabNames);
-        if (prefabNames == null || prefabNames.Length == 0) {
-            return false;
-        }
-
-        for (int i = 0; i < results.Length; i++) {
-            if (results[i] == null) {
-                return false;
-            }
-        }
-
-        return true;
     }
 
     public IEnumerator LoadAsync(Action onSuccess = null, Action<string> onError = null) {
@@ -136,13 +102,15 @@ public class GameAssetManager : MonoBehaviour
     }
 
     void CachePrefabs() {
-        GameObject[] assets = loadedBundle.LoadAllAssets<GameObject>();
         prefabs.Clear();
 
-        for (int i = 0; i < assets.Length; i++) {
-            if (assets[i] != null) {
-                prefabs[assets[i].name] = assets[i];
-            }
+        string[] assetPaths = loadedBundle.GetAllAssetNames();
+        for (int i = 0; i < assetPaths.Length; i++) {
+            GameObject go = loadedBundle.LoadAsset<GameObject>(assetPaths[i]);
+            if (go == null) continue;
+
+            prefabs[go.name] = go;
+            prefabs[Path.GetFileNameWithoutExtension(assetPaths[i])] = go;
         }
     }
 

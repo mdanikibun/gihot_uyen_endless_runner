@@ -4,28 +4,31 @@ using System.Collections;
 public class ObstacleSpawner : MonoBehaviour
 {
     [Header("References")]
-    [SerializeField] GameObject[] obstaclePrefabs;
     [SerializeField] Transform obstacleParent;
     [SerializeField] PoolManager poolManager;
     [SerializeField] GameSettings settings;
+    
+    GameObject[] obstaclePrefabs;
 
     Coroutine spawnCoroutine;
 
-    void Awake() {
-        RegisterObstaclePools();
-    }
+    public void ApplyPrefabs(GameObject[] prefabs) {
+        obstaclePrefabs = prefabs;
 
-    void Start() {
-        spawnCoroutine = StartCoroutine(SpawnObstacleCoroutine());
+        RegisterObstaclePools();
+        EnsureSpawnRunning();
     }
 
     void RegisterObstaclePools() {
         int poolSize = Mathf.Max(1, settings.obstacleSpawn.poolSize);
         for (int i = 0; i < obstaclePrefabs.Length; i++) {
-            if (obstaclePrefabs[i] != null) {
-                poolManager.EnsurePool(obstaclePrefabs[i], poolSize);
-            }
+            poolManager.EnsurePool(obstaclePrefabs[i], poolSize);
         }
+    }
+
+    void EnsureSpawnRunning() {
+        if (spawnCoroutine != null) return;
+        spawnCoroutine = StartCoroutine(SpawnObstacleCoroutine());
     }
 
     public void ClearAndRestartObstacles() {

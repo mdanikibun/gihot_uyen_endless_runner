@@ -4,19 +4,26 @@ using System.Collections.Generic;
 public class Segment : MonoBehaviour
 {
     [Header("References")]
-    [SerializeField] GameObject fencePrefab;
-    [SerializeField] GameObject powerUpItemPrefab;
-    [SerializeField] GameObject coinPrefab;
     [SerializeField] GameSettings settings;
+
+    static GameObject fencePrefab;
+    static GameObject powerUpItemPrefab;
+    static GameObject coinPrefab;
 
     readonly List<int> availableLanes = new List<int>(4);
     readonly List<PooledObject> spawnedObjects = new List<PooledObject>(16);
     PoolManager poolManager;
     bool shouldSpawnItems = true;
 
+    public static void ApplyItemPrefabs(GameObject fence, GameObject coin, GameObject powerUp, GameSettings settings) {
+        fencePrefab = fence;
+        coinPrefab = coin;
+        powerUpItemPrefab = powerUp;
+        RegisterItemPools(settings);
+    }
+
     void Awake() {
         poolManager = PoolManager.Instance;
-        RegisterItemPools();
     }
 
     public void DisableItemSpawn() {
@@ -43,11 +50,8 @@ public class Segment : MonoBehaviour
         SpawnItemsIfNeeded();
     }
 
-    void RegisterItemPools() {
-        if (poolManager == null) {
-            poolManager = PoolManager.Instance;
-        }
-
+    static void RegisterItemPools(GameSettings settings) {
+        PoolManager poolManager = PoolManager.Instance;
         poolManager.EnsurePool(fencePrefab, settings.segment.fencePoolSize);
         poolManager.EnsurePool(coinPrefab, settings.segment.coinPoolSize);
         poolManager.EnsurePool(powerUpItemPrefab, settings.segment.powerUpPoolSize);
@@ -122,11 +126,6 @@ public class Segment : MonoBehaviour
     }
 
     void SpawnChild(GameObject prefab, Vector3 worldPosition) {
-        if (prefab == null) return;
-        if (poolManager == null) {
-            poolManager = PoolManager.Instance;
-        }
-
         GameObject instance = poolManager.GetInactive(prefab);
         Transform instanceTransform = instance.transform;
         instanceTransform.SetParent(transform, false);

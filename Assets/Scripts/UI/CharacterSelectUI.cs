@@ -16,14 +16,15 @@ public class CharacterSelectUI : MonoBehaviour
     [SerializeField] TMP_InputField playerNameInput;
     [SerializeField] Button[] characterSlots;
     [SerializeField] Button nextButton;
-    [SerializeField] CharacterOption[] characters;
     [SerializeField] GameSettings settings;
 
+    CharacterOption[] characters;
     CharacterPreviewSlot[] previewSlots;
     GameObject previewRoot;
     readonly List<RenderTexture> previewTextures = new List<RenderTexture>();
     int previewLayer;
     int selectedIndex = -1;
+    bool pendingPreviewRebuild;
 
     public int SelectedIndex => selectedIndex;
     public string PlayerName {
@@ -34,11 +35,45 @@ public class CharacterSelectUI : MonoBehaviour
 
     bool HasValidName => !string.IsNullOrWhiteSpace(PlayerName);
 
+    public void ApplyPrefabs(GameObject[] playerPrefabs) {
+        characters = new CharacterOption[playerPrefabs.Length];
+        for (int i = 0; i < playerPrefabs.Length; i++) {
+            characters[i] = new CharacterOption {
+                displayName = playerPrefabs[i].name,
+                playerPrefab = playerPrefabs[i]
+            };
+        }
+        pendingPreviewRebuild = true;
+    }
+
+    public GameObject GetPlayerPrefab(int index) {
+        return characters[index].playerPrefab;
+    }
+
+    public void PrewarmPreviews(MonoBehaviour coroutineHost) {
+        if (!pendingPreviewRebuild && previewRoot != null) return;
+
+        pendingPreviewRebuild = false;
+        ClearCharacterPreviews();
+        BuildCharacterPreviews(coroutineHost);
+        previewRoot.SetActive(false);
+    }
+
+    public void BuildPreviewsIfNeeded() {
+        if (!pendingPreviewRebuild && previewRoot != null) {
+            previewRoot.SetActive(true);
+            return;
+        }
+
+        pendingPreviewRebuild = false;
+        ClearCharacterPreviews();
+        BuildCharacterPreviews(this);
+    }
+
     void Awake() {
         playerNameInput.onValueChanged.AddListener(OnPlayerNameChanged);
         SetupSlotListeners();
         nextButton.onClick.AddListener(OnNextClicked);
-        BuildCharacterPreviews();
         RefreshNextButton();
     }
 
@@ -58,6 +93,10 @@ public class CharacterSelectUI : MonoBehaviour
     }
 
     void OnDestroy() {
+        ClearCharacterPreviews();
+    }
+
+    void ClearCharacterPreviews() {
         for (int i = 0; i < previewTextures.Count; i++) {
             if (previewTextures[i] != null) {
                 previewTextures[i].Release();
@@ -67,7 +106,27 @@ public class CharacterSelectUI : MonoBehaviour
 
         if (previewRoot != null) {
             Destroy(previewRoot);
+            previewRoot = null;
         }
+
+        if (characterSlots != null) {
+            for (int i = 0; i < characterSlots.Length; i++) {
+                Button slot = characterSlots[i];
+                if (slot == null) continue;
+
+                CharacterPreviewSlot previewSlot = slot.GetComponent<CharacterPreviewSlot>();
+                if (previewSlot != null) {
+                    Destroy(previewSlot);
+                }
+
+                Transform previewImage = slot.transform.Find("Character Preview");
+                if (previewImage != null) {
+                    Destroy(previewImage.gameObject);
+                }
+            }
+        }
+
+        previewSlots = null;
     }
 
     public void OnCharacterClicked(int index) {
@@ -77,7 +136,7 @@ public class CharacterSelectUI : MonoBehaviour
         RefreshSlotVisuals();
         RefreshNextButton();
 
-        gameFlow.SetSelectedCharacter(index, GetSelectedOption());
+        gameFlow.SetSelectedCharacter(index);
     }
 
     public void OnNextClicked() {
@@ -99,13 +158,6 @@ public class CharacterSelectUI : MonoBehaviour
         nextButton.interactable = CanGoNext();
     }
 
-    CharacterOption GetSelectedOption() {
-        if (selectedIndex < 0 || selectedIndex >= characters.Length) {
-            return null;
-        }
-        return characters[selectedIndex];
-    }
-
     void RefreshSlotVisuals() {
         for (int i = 0; i < characterSlots.Length; i++) {
             Image image = characterSlots[i].targetGraphic as Image;
@@ -124,7 +176,7 @@ public class CharacterSelectUI : MonoBehaviour
         }
     }
 
-    void BuildCharacterPreviews() {
+    void BuildCharacterPreviews(MonoBehaviour coroutineHost) {
         previewLayer = LayerMask.NameToLayer(previewLayerName);
         if (previewLayer < 0) {
             previewLayer = 8;
@@ -137,14 +189,13 @@ public class CharacterSelectUI : MonoBehaviour
         previewSlots = new CharacterPreviewSlot[characterSlots.Length];
 
         for (int i = 0; i < characterSlots.Length; i++) {
-            previewSlots[i] = CreatePreview(i);
+            previewSlots[i] = CreatePreview(i, coroutineHost);
         }
     }
 
-    CharacterPreviewSlot CreatePreview(int index) {
+    CharacterPreviewSlot CreatePreview(int index, MonoBehaviour coroutineHost) {
         Button slot = characterSlots[index];
-        GameObject prefab = GetPrefab(index);
-        if (prefab == null) return null;
+        GameObject prefab = characters[index].playerPrefab;
 
         if (slot.GetComponent<RectMask2D>() == null) {
             slot.gameObject.AddComponent<RectMask2D>();
@@ -162,6 +213,7 @@ public class CharacterSelectUI : MonoBehaviour
         model.name = prefab.name;
         model.transform.localPosition = Vector3.zero;
         model.transform.localRotation = Quaternion.identity;
+        model.SetActive(true);
         DisableGameplayComponents(model);
         SetLayerRecursively(model, previewLayer);
 
@@ -181,19 +233,18 @@ public class CharacterSelectUI : MonoBehaviour
 
         Camera previewCamera = CreatePreviewCamera(stage.transform, model, renderTexture);
         CreatePreviewLight(stage.transform);
-        StartCoroutine(ReframeWhenReady(previewCamera, model));
+        FrameCamera(previewCamera, model);
+        coroutineHost.StartCoroutine(ReframeWhenReady(previewCamera, model));
 
-        CharacterPreviewSlot previewSlot = slot.gameObject.AddComponent<CharacterPreviewSlot>();
+        CharacterPreviewSlot previewSlot = slot.GetComponent<CharacterPreviewSlot>();
+        if (previewSlot == null) {
+            previewSlot = slot.gameObject.AddComponent<CharacterPreviewSlot>();
+        }
         previewSlot.Setup(model.transform, settings.characterSelect.previewRotateSpeed);
         rawImage.enabled = true;
+        rawImage.transform.SetAsLastSibling();
 
         return previewSlot;
-    }
-
-    GameObject GetPrefab(int index) {
-        if (index < 0 || index >= characters.Length) return null;
-
-        return characters[index] != null ? characters[index].playerPrefab : null;
     }
 
     RawImage CreateRawImage(Transform slot, RenderTexture renderTexture) {

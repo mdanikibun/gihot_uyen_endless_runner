@@ -28,8 +28,6 @@ public class GameFlowController : MonoBehaviour
 
     string playerName = "Player";
     int selectedCharacterIndex = -1;
-    CharacterOption selectedCharacter;
-    GameObject scenePlayer;
     GameObject runtimePlayer;
     int runtimeCharacterIndex = -1;
     bool leaderboardOpenedFromPause;
@@ -45,10 +43,6 @@ public class GameFlowController : MonoBehaviour
         }
     }
 
-    void Awake() {
-        scenePlayer = player;
-    }
-
     void Start() {
         ShowLoading();
         StartCoroutine(LoadAssetsThenEnterMenu());
@@ -61,6 +55,7 @@ public class GameFlowController : MonoBehaviour
     public void ShowCharacterSelect() {
         SetGameplayVisible(false);
         ShowOnlyPanel(panelCharacterSelect);
+        characterSelectUI.BuildPreviewsIfNeeded();
         currentState = GameFlowState.CharacterSelect;
         Time.timeScale = 1f;
     }
@@ -175,14 +170,12 @@ public class GameFlowController : MonoBehaviour
         playerName = string.IsNullOrWhiteSpace(name) ? "Player" : name.Trim();
     }
 
-    public void SetSelectedCharacter(int index, CharacterOption option) {
+    public void SetSelectedCharacter(int index) {
         selectedCharacterIndex = index;
-        selectedCharacter = option;
     }
 
     void ApplySelectedPlayer() {
-        GameObject prefab = selectedCharacter != null ? selectedCharacter.playerPrefab : null;
-        if (prefab == null) return;
+        GameObject prefab = characterSelectUI.GetPlayerPrefab(selectedCharacterIndex);
 
         if (runtimePlayer != null && runtimeCharacterIndex == selectedCharacterIndex) {
             player = runtimePlayer;
@@ -195,15 +188,12 @@ public class GameFlowController : MonoBehaviour
             runtimePlayer = null;
         }
 
-        if (scenePlayer != null) {
-            scenePlayer.SetActive(false);
-        }
-
-        runtimePlayer = Instantiate(prefab);
+        Vector3 spawnPosition = new Vector3(0f, 1.2f, 0f);
+        runtimePlayer = Instantiate(prefab, spawnPosition, Quaternion.identity);
         runtimePlayer.name = prefab.name;
+        SetLayerRecursively(runtimePlayer, 0);
         runtimePlayer.SetActive(false);
         runtimeCharacterIndex = selectedCharacterIndex;
-        CopyScenePlayerLight(runtimePlayer);
         BindPlayer(runtimePlayer);
         player = runtimePlayer;
     }
@@ -215,17 +205,12 @@ public class GameFlowController : MonoBehaviour
         levelGenerator.BindPlayerAnimator(animator);
     }
 
-    void CopyScenePlayerLight(GameObject playerInstance) {
-        if (playerInstance.GetComponentInChildren<Light>(true) != null) return;
-        if (scenePlayer == null) return;
-
-        Light sceneLight = scenePlayer.GetComponentInChildren<Light>(true);
-        if (sceneLight == null) return;
-
-        GameObject lightClone = Instantiate(sceneLight.gameObject, playerInstance.transform);
-        lightClone.name = sceneLight.gameObject.name;
-        lightClone.transform.localPosition = sceneLight.transform.localPosition;
-        lightClone.transform.localRotation = sceneLight.transform.localRotation;
+    void SetLayerRecursively(GameObject target, int layer) {
+        target.layer = layer;
+        Transform targetTransform = target.transform;
+        for (int i = 0; i < targetTransform.childCount; i++) {
+            SetLayerRecursively(targetTransform.GetChild(i).gameObject, layer);
+        }
     }
 
     Coroutine loadingEffectCoroutine;
@@ -271,12 +256,53 @@ public class GameFlowController : MonoBehaviour
         );
 
         if (failed) {
-            Debug.LogWarning("AssetBundle load failed. Entering Main Menu with Inspector prefabs.");
+            Debug.LogWarning("AssetBundle load failed.");
+        } else {
+            ApplyGameplayPrefabs(assets);
         }
 
         yield return new WaitForSeconds(3f);
 
         EnterMainMenu();
+    }
+
+    void ApplyGameplayPrefabs(GameAssetManager assets) {
+        levelGenerator.ApplyPrefabs(
+            assets.GetPrefabs(
+                GameAssetManager.PrefabNames.StartText1,
+                GameAssetManager.PrefabNames.StartText2,
+                GameAssetManager.PrefabNames.StartText3,
+                GameAssetManager.PrefabNames.StartTextRun,
+                GameAssetManager.PrefabNames.StartTextNull
+            ),
+            assets.GetPrefabs(
+                GameAssetManager.PrefabNames.Road1,
+                GameAssetManager.PrefabNames.Road2
+            ),
+            assets.GetPrefab(GameAssetManager.PrefabNames.Gate)
+        );
+
+        obstacleSpawner.ApplyPrefabs(assets.GetPrefabs(
+            GameAssetManager.PrefabNames.Rock,
+            GameAssetManager.PrefabNames.Wheel,
+            GameAssetManager.PrefabNames.Car,
+            GameAssetManager.PrefabNames.BaseObstacle
+        ));
+
+        Segment.ApplyItemPrefabs(
+            assets.GetPrefab(GameAssetManager.PrefabNames.Fence),
+            assets.GetPrefab(GameAssetManager.PrefabNames.CoinPickup),
+            assets.GetPrefab(GameAssetManager.PrefabNames.PowerUpPickup),
+            levelGenerator.Settings
+        );
+
+        characterSelectUI.ApplyPrefabs(assets.GetPrefabs(
+            GameAssetManager.PrefabNames.Player,
+            GameAssetManager.PrefabNames.Player2,
+            GameAssetManager.PrefabNames.Player3,
+            GameAssetManager.PrefabNames.Player4
+        ));
+        characterSelectUI.PrewarmPreviews(this);
     }
 
     void EnterMainMenu() {

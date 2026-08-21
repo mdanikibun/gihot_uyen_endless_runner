@@ -6,13 +6,14 @@ public class LevelGenerator : MonoBehaviour
 {
     [Header("References")]
     [SerializeField] CameraController cameraController;
-    [SerializeField] GameObject[] segmentStartingPrefabs;
-    [SerializeField] GameObject segmentGatePrefab;
-    [SerializeField] GameObject[] segmentPrefabs;
     [SerializeField] Transform segmentParent;
     [SerializeField] PoolManager poolManager;
-    [SerializeField] Animator playerAnimator;
     [SerializeField] GameSettings settings;
+
+    GameObject[] segmentStartingPrefabs;
+    GameObject segmentGatePrefab;
+    GameObject[] segmentPrefabs;
+    Animator playerAnimator;
 
     Coroutine speedBuffCoroutine;
 
@@ -35,14 +36,21 @@ public class LevelGenerator : MonoBehaviour
     public bool IsDemoMode => isDemoMode;
     public bool IsPlaying => isPlaying;
     public float TotalDistance => totalDistance;
+    public GameSettings Settings => settings;
 
     public void BindPlayerAnimator(Animator animator) {
         playerAnimator = animator;
     }
 
+    public void ApplyPrefabs(GameObject[] startingPrefabs, GameObject[] roadPrefabs, GameObject gatePrefab) {
+        segmentStartingPrefabs = startingPrefabs;
+        segmentPrefabs = roadPrefabs;
+        segmentGatePrefab = gatePrefab;
+        RegisterSegmentPools();
+    }
+
     void Awake() {
         CacheCameraTransform();
-        RegisterSegmentPools();
     }
 
     void CacheCameraTransform() {
@@ -55,12 +63,6 @@ public class LevelGenerator : MonoBehaviour
     void Start() {
         moveSpeed = settings.level.speedDefault;
         Physics.gravity = new Vector3(Physics.gravity.x, Physics.gravity.y, gravityZDefault);
-
-        // Có GameFlow thì để menu gọi EnterDemoMode / ResetForNewRun
-        if (FindAnyObjectByType<GameFlowController>() == null) {
-            SpawnStartingSegments();
-            isPlaying = true;
-        }
     }
 
     void Update() {
@@ -77,19 +79,13 @@ public class LevelGenerator : MonoBehaviour
 
     void RegisterSegmentPools() {
         for (int i = 0; i < segmentPrefabs.Length; i++) {
-            if (segmentPrefabs[i] != null) {
-                poolManager.EnsurePool(segmentPrefabs[i], settings.level.segmentPoolSize);
-            }
+            poolManager.EnsurePool(segmentPrefabs[i], settings.level.segmentPoolSize);
         }
 
-        if (segmentGatePrefab != null) {
-            poolManager.EnsurePool(segmentGatePrefab, settings.level.gatePoolSize);
-        }
+        poolManager.EnsurePool(segmentGatePrefab, settings.level.gatePoolSize);
 
         for (int i = 0; i < segmentStartingPrefabs.Length; i++) {
-            if (segmentStartingPrefabs[i] != null) {
-                poolManager.EnsurePool(segmentStartingPrefabs[i], settings.level.startingPoolSize);
-            }
+            poolManager.EnsurePool(segmentStartingPrefabs[i], settings.level.startingPoolSize);
         }
     }
 
